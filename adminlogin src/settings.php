@@ -67,6 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="settings.css">
+    <link rel="stylesheet" href="adminloginstyles.css">
+
 </head>
 <body>
     <?php include 'sidebar.php'; ?>
@@ -295,6 +297,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         }
         
+
+    });
+    </script>
+      <script>
         // Sidebar toggle with overlay
         var toggleSidebarBtn = document.getElementById('toggleSidebar');
         var sidebar = document.querySelector('.sidebar');
@@ -330,7 +336,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 overlay.classList.remove('active');
             }
         });
-    });
-    </script>
+        </script>
 </body>
 </html>

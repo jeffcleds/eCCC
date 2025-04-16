@@ -70,22 +70,29 @@ function isActive($page, $currentPage) {
 <div class="sidebar-overlay"></div>
 
 <script>
-// Toggle sidebar functionality
 document.addEventListener('DOMContentLoaded', function() {
     const toggleBtn = document.getElementById('toggleSidebar');
     const sidebar = document.querySelector('.sidebar');
-    const overlay = document.querySelector('.sidebar-overlay');
+    let overlay = document.querySelector('.sidebar-overlay');
+    
+    // Create overlay element if it doesn't exist
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'sidebar-overlay';
+        document.body.appendChild(overlay);
+    }
+    
+    function toggleSidebar() {
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
     
     if (toggleBtn && sidebar) {
-        toggleBtn.addEventListener('click', function() {
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        });
+        // Toggle sidebar when button clicked
+        toggleBtn.addEventListener('click', toggleSidebar);
         
-        overlay.addEventListener('click', function() {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-        });
+        // Close sidebar when overlay clicked
+        overlay.addEventListener('click', toggleSidebar);
         
         // Close sidebar when clicking a menu item (for mobile)
         document.querySelectorAll('.sidebar-menu .menu-item').forEach(item => {
@@ -97,5 +104,16 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 991) {
+            // Reset sidebar on larger screens
+            if (sidebar) {
+                sidebar.classList.remove('active');
+            }
+            overlay.classList.remove('active');
+        }
+    });
 });
 </script>
