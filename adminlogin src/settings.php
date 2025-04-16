@@ -67,81 +67,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="settings.css">
-    
 </head>
 <body>
-    <?php
-    include 'sidebar.php'; ?>
+    <?php include 'sidebar.php'; ?>
 
     <!-- Main Content -->
     <main class="main-content">
         <!-- Header -->
-        <header class="header">
-            <button class="toggle-sidebar" id="toggleSidebar">
-                <i class="fas fa-bars"></i>
-            </button>
-            <h1 class="header-title">Settings</h1>
-            <div class="header-actions">
-                <button class="notification-btn">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">3</span>
-                </button>
-                <div id="notification-dropdown" class="notification-dropdown">
-                    <div class="notification-header">
-                        <h3>Notifications</h3>
-                        <a href="#" class="notification-action">Mark all as read</a>
-                    </div>
-                    <div class="notification-list">
-                        <div class="notification-item unread">
-                            <div class="notification-icon add">
-                                <i class="fas fa-plus"></i>
-                            </div>
-                            <div class="notification-content">
-                                <p class="notification-title">New student registered: Joshua Gamora</p>
-                                <p class="notification-time">Today, 10:30 AM</p>
-                            </div>
-                        </div>
-                        <div class="notification-item unread">
-                            <div class="notification-icon edit">
-                                <i class="fas fa-edit"></i>
-                            </div>
-                            <div class="notification-content">
-                                <p class="notification-title">Course schedule updated: Computer Science 101</p>
-                                <p class="notification-time">Yesterday, 3:45 PM</p>
-                            </div>
-                        </div>
-                        <div class="notification-item unread">
-                            <div class="notification-icon add">
-                                <i class="fas fa-plus"></i>
-                            </div>
-                            <div class="notification-content">
-                                <p class="notification-title">New faculty member added: Prof. Marbert Plazo</p>
-                                <p class="notification-time">Yesterday, 1:20 PM</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="notification-footer">
-                        <a href="#">View all notifications</a>
-                    </div>
-                </div>
-                <div class="user-profile">
-                    <div class="user-avatar">
-                        <?php if ($photoData): ?>
-                            <img src="data:image/jpeg;base64,<?php echo $photoData; ?>" alt="User Photo" class="profile-logo">
-                        <?php else: ?>
-                            <img src="../Pictures/default-photo.png" alt="Default User Photo" class="profile-logo">
-                        <?php endif; ?>
-                    </div>
-                    <div id="dropdown-menu" class="dropdown-content">
-                        <b class="rightsidepicname"><?php echo $firstName . ' ' . $lastName; ?></b>
-                        <p class="rightsidepicrole"><?php echo ucfirst($role); ?></p>
-                        <a href="profile.php"><i class="fa-solid fa-universal-access"></i>Profile</a>
-                        <a href="settings.php"><i class="fas fa-cog"></i>Settings</a>
-                        <a href="../logout.php"><i class="fas fa-sign-out-alt"></i>Logout</a>
-                    </div>
-                </div>
-            </div>
-        </header>
+        <?php include 'header.php'; ?>
 
         <!-- Settings Content -->
         <div class="dashboard">
@@ -165,7 +98,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p class="settings-description">Manage your account settings and preferences</p>
                 </div>
               
-
                 <div class="settings-tabs">
                     <div class="settings-tab active" data-tab="profile">
                         <i class="fas fa-user"></i> Profile
@@ -278,6 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </form>
                     </div>
                 </div>
+                
                 <!-- System Settings -->
                 <div class="settings-content" id="system-settings">
                     <div class="settings-section">
@@ -319,109 +252,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Scripts -->
     <script src="../javascript/togglesidebar.js"></script>
     <script>
-    // Wait for the DOM to be fully loaded
     document.addEventListener("DOMContentLoaded", function() {
-        console.log("DOM fully loaded");
-        
-        // Get references to all elements we need
-        var userAvatar = document.querySelector('.user-avatar');
-        var userDropdown = document.getElementById('dropdown-menu');
-        var notificationBtn = document.querySelector('.notification-btn');
-        var notificationDropdown = document.getElementById('notification-dropdown');
-        
-        // User avatar click handler
-        if (userAvatar && userDropdown) {
-            userAvatar.addEventListener('click', function(event) {
-                console.log("User avatar clicked");
-                event.stopPropagation(); // Prevent the click from bubbling up
-                
-                // Toggle user dropdown
-                var isVisible = userDropdown.style.display === "block";
-                
-                // Hide all dropdowns first
-                hideAllDropdowns();
-                
-                // Show this dropdown if it was hidden
-                if (!isVisible) {
-                    userDropdown.style.display = "block";
-                    // Adjust position after showing
-                    adjustDropdownPosition();
-                }
-            });
-        }
-        
-        // Notification button click handler
-        if (notificationBtn && notificationDropdown) {
-            notificationBtn.addEventListener('click', function(event) {
-                console.log("Notification button clicked");
-                event.stopPropagation(); // Prevent the click from bubbling up
-                
-                // Toggle notification dropdown
-                var isVisible = notificationDropdown.style.display === "block";
-                
-                // Hide all dropdowns first
-                hideAllDropdowns();
-                
-                // Show this dropdown if it was hidden
-                if (!isVisible) {
-                    notificationDropdown.style.display = "block";
-                    // Adjust position after showing
-                    adjustDropdownPosition();
-                }
-            });
-        }
-        
-        // Function to hide all dropdowns
-        function hideAllDropdowns() {
-            console.log("Hiding all dropdowns");
-            var allDropdowns = document.querySelectorAll('.dropdown-content, .notification-dropdown');
-            allDropdowns.forEach(function(dropdown) {
-                dropdown.style.display = "none";
-            });
-        }
-        
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function() {
-            console.log("Document clicked");
-            hideAllDropdowns();
-        });
-        
-        // Prevent clicks inside dropdowns from closing them
-        var dropdownContents = document.querySelectorAll('.dropdown-content, .notification-dropdown');
-        dropdownContents.forEach(function(dropdown) {
-            dropdown.addEventListener('click', function(event) {
-                console.log("Click inside dropdown");
-                event.stopPropagation(); // Prevent the click from bubbling up
-            });
-        });
-        
-        // Mark notification as read when clicked
-        var notificationItems = document.querySelectorAll('.notification-item');
-        notificationItems.forEach(function(item) {
-            item.addEventListener('click', function() {
-                console.log("Notification item clicked");
-                this.classList.remove('unread');
-                
-                // Update badge count
-                var unreadCount = document.querySelectorAll('.notification-item.unread').length;
-                var badge = document.querySelector('.notification-badge');
-                if (badge) {
-                    badge.textContent = unreadCount;
-                    if (unreadCount === 0) {
-                        badge.style.display = 'none';
-                    }
-                }
-            });
-        });
-        
         // Settings tabs functionality
         var tabs = document.querySelectorAll('.settings-tab');
         var contents = document.querySelectorAll('.settings-content');
         
         tabs.forEach(function(tab) {
             tab.addEventListener('click', function() {
-                console.log("Tab clicked:", this.getAttribute('data-tab'));
-                
                 // Remove active class from all tabs
                 tabs.forEach(function(t) {
                     t.classList.remove('active');
@@ -441,38 +278,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         });
         
-        // Color picker functionality
-        var colorOptions = document.querySelectorAll('.color-option');
-        colorOptions.forEach(function(option) {
-            option.addEventListener('click', function() {
-                console.log("Color option clicked:", this.getAttribute('data-color'));
-                
-                // Remove selected class from all options
-                colorOptions.forEach(function(o) {
-                    o.classList.remove('selected');
-                });
-                
-                // Add selected class to clicked option
-                this.classList.add('selected');
-                
-                // Apply the selected color
-                var color = this.getAttribute('data-color');
-                document.documentElement.style.setProperty('--primary-color', color);
-            });
-        });
-        
         // Profile photo preview
         var photoInput = document.getElementById('profile-photo');
         if (photoInput) {
             photoInput.addEventListener('change', function(e) {
-                console.log("Photo input changed");
                 if (e.target.files && e.target.files[0]) {
                     var reader = new FileReader();
                     reader.onload = function(e) {
                         var preview = document.querySelector('.avatar-preview img');
                         if (preview) {
                             preview.src = e.target.result;
-                            console.log("Preview updated");
                         }
                     }
                     reader.readAsDataURL(e.target.files[0]);
@@ -514,69 +329,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 overlay.classList.remove('active');
             }
-            
-            // Also adjust dropdown positions
-            adjustDropdownPosition();
         });
-        
-        // Improve dropdown positioning in small viewports
-        function adjustDropdownPosition() {
-            var dropdowns = document.querySelectorAll('.dropdown-content, .notification-dropdown');
-            var viewportWidth = window.innerWidth;
-            
-            dropdowns.forEach(function(dropdown) {
-                if (dropdown.style.display === 'block') {
-                    var rect = dropdown.getBoundingClientRect();
-                    
-                    // If dropdown extends beyond right edge
-                    if (rect.right > viewportWidth) {
-                        dropdown.style.right = '10px';
-                        dropdown.style.left = 'auto';
-                    }
-                }
-            });
-        }
-        
-        console.log("All event listeners attached");
     });
-
-    document.addEventListener("DOMContentLoaded", function() {
-    // Get a reference to the toggle button
-    var toggleBtn = document.getElementById('toggleSidebar');
-    
-    // Check if it exists
-    if (toggleBtn) {
-        console.log("Toggle sidebar button found");
-        
-        // Remove any existing event listeners (this is a trick that might help)
-        toggleBtn.outerHTML = toggleBtn.outerHTML;
-        
-        // Get the new reference after replacing the element
-        toggleBtn = document.getElementById('toggleSidebar');
-        
-        // Add our event listener
-        toggleBtn.addEventListener('click', function(event) {
-            console.log("Toggle sidebar button clicked");
-            event.preventDefault();
-            event.stopPropagation();
-            
-            // Toggle the sidebar
-            var sidebar = document.querySelector('.sidebar');
-            if (sidebar) {
-                sidebar.classList.toggle('active');
-                console.log("Sidebar toggled");
-                
-                // Toggle the overlay
-                var overlay = document.querySelector('.sidebar-overlay');
-                if (overlay) {
-                    overlay.classList.toggle('active');
-                }
-            }
-        });
-    } else {
-        console.error("Toggle sidebar button not found");
-    }
-});
-</script>
+    </script>
 </body>
 </html>

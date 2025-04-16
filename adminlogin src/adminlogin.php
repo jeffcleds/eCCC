@@ -34,89 +34,14 @@ $PhoneNumber = $_SESSION['phoneNumber'] ?? '';
     <link rel="stylesheet" href="adminloginstyles.css">
 </head>
 <body>
+    <!-- Sidebar -->
     <?php include 'sidebar.php'; ?>
 
     <!-- Main Content -->
     <main class="main-content">
+
         <!-- Header -->
-        <header class="header">
-            <button class="toggle-sidebar" id="toggleSidebar">
-                <i class="fas fa-bars"></i>
-            </button>
-            <h1 class="header-title">Dashboard</h1>
-            <div class="header-actions">
-            <button class="notification-btn" onclick="toggleNotificationDropdown()">
-    <i class="fas fa-bell"></i>
-    <span class="notification-badge">3</span>
-</button>
-<div id="notification-dropdown" class="notification-dropdown">
-    <div class="notification-header">
-        <h3>Notifications</h3>
-        <a href="#" class="notification-action">Mark all as read</a>
-    </div>
-    <div class="notification-list">
-        <div class="notification-item unread">
-            <div class="notification-icon add">
-                <i class="fas fa-plus"></i>
-            </div>
-            <div class="notification-content">
-                <p class="notification-title">New student registered: Joshua Gamora</p>
-                <p class="notification-time">Today, 10:30 AM</p>
-            </div>
-        </div>
-        <div class="notification-item unread">
-            <div class="notification-icon edit">
-                <i class="fas fa-edit"></i>
-            </div>
-            <div class="notification-content">
-                <p class="notification-title">Course schedule updated: Computer Science 101</p>
-                <p class="notification-time">Yesterday, 3:45 PM</p>
-            </div>
-        </div>
-        <div class="notification-item unread">
-            <div class="notification-icon add">
-                <i class="fas fa-plus"></i>
-            </div>
-            <div class="notification-content">
-                <p class="notification-title">New faculty member added: Prof. Marbert Plazo</p>
-                <p class="notification-time">Yesterday, 1:20 PM</p>
-            </div>
-        </div>
-    </div>
-    <div class="notification-footer">
-        <a href="#">View all notifications</a>
-    </div>
-</div>
-                <div class="user-profile">
-                    <div class="user-avatar" onclick="toggleDropdown()">
-                        <?php if ($photoData): ?>
-                            <img src="data:image/jpeg;base64,<?php echo $photoData; ?>" alt="User Photo" class="profile-logo">
-                        <?php else: ?>
-                            <img src="../Pictures/default-photo.png" alt="Default User Photo" class="profile-logo">
-                        <?php endif; ?>
-                    </div>
-                    <div id="dropdown-menu" class="dropdown-content">
-                        <b class="rightsidepicname"><?php echo $firstName . ' ' . $lastName; ?></b>
-                        <p class="rightsidepicrole"><?php echo ucfirst($role); ?></p>
-                        <a href="profile.php"><i class="fa-solid fa-universal-access"></i>Profile</a>
-                        <a href="settings.php"><i class="fas fa-cog"></i>Settings</a>
-                        <a href="../logout.php"><i class="fas fa-sign-out-alt"></i>Logout</a>
-                    </div>
-                    <script>
-                        function toggleDropdown() {
-                            var menu = document.getElementById("dropdown-menu");
-                            menu.style.display = menu.style.display === "block" ? "none" : "block";
-                        }
-                        window.onclick = function(event) {
-                            if (!event.target.closest('.user-avatar')) {
-                                var menu = document.getElementById("dropdown-menu");
-                                if (menu) menu.style.display = "none";
-                            }
-                        }
-                    </script>
-                </div>
-            </div>
-        </header>
+        <?php include 'header.php'; ?>
 
         <!-- Dashboard Content -->
         <div class="dashboard">
@@ -274,62 +199,6 @@ $PhoneNumber = $_SESSION['phoneNumber'] ?? '';
 
     <!-- Scripts -->
     <script src="../javascript/togglesidebar.js"></script>
-    <script>
-    // Function to toggle notification dropdown
-    function toggleNotificationDropdown() {
-        var dropdown = document.getElementById("notification-dropdown");
-        var isVisible = dropdown.style.display === "block";
-        
-        // Hide all dropdowns first
-        var allDropdowns = document.querySelectorAll(".dropdown-content, .notification-dropdown");
-        allDropdowns.forEach(function(dropdown) {
-            dropdown.style.display = "none";
-        });
-        
-        // Toggle this dropdown
-        if (!isVisible) {
-            dropdown.style.display = "block";
-        }
-    }
     
-    // Close dropdowns when clicking outside
-    document.addEventListener("click", function(event) {
-        // If click is not on notification button and not inside notification dropdown
-        if (!event.target.closest('.notification-btn') && !event.target.closest('.notification-dropdown')) {
-            var notificationDropdown = document.getElementById("notification-dropdown");
-            if (notificationDropdown) {
-                notificationDropdown.style.display = "none";
-            }
-        }
-        
-        // If click is not on user avatar and not inside user dropdown
-        if (!event.target.closest('.user-avatar') && !event.target.closest('.dropdown-content')) {
-            var userDropdown = document.getElementById("dropdown-menu");
-            if (userDropdown) {
-                userDropdown.style.display = "none";
-            }
-        }
-    });
-    
-    // Mark notification as read when clicked
-    document.addEventListener("DOMContentLoaded", function() {
-        var notificationItems = document.querySelectorAll(".notification-item");
-        notificationItems.forEach(function(item) {
-            item.addEventListener("click", function() {
-                this.classList.remove("unread");
-                
-                // Update badge count
-                var unreadCount = document.querySelectorAll(".notification-item.unread").length;
-                var badge = document.querySelector(".notification-badge");
-                if (badge) {
-                    badge.textContent = unreadCount;
-                    if (unreadCount === 0) {
-                        badge.style.display = "none";
-                    }
-                }
-            });
-        });
-    });
-</script>
 </body>
 </html>
