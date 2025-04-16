@@ -41,12 +41,14 @@ $errorMessage = isset($_GET['error']) ? $_GET['error'] : '';
                 <input type="password" id="Password" name="Password" placeholder="Enter your password" required>
             </div>
 
-            <button type="submit" class="login-btn">Log In</button>
-            <a href="#" class="forgot-password" onclick="showForgotPasswordForm()">Forgot password?</a>
-
             <?php if (isset($_GET['error']) && $_GET['error'] == 1): ?>
                 <div class="error-message">Invalid username or password. Please try again.</div>
             <?php endif; ?>
+
+
+            <button type="submit" class="login-btn">Log In</button>
+            <a href="#" class="forgot-password" onclick="showForgotPasswordForm()">Forgot password?</a>
+
 
             <div class="help-text">
                 Need help? <a href="#" onclick="showContactForm()">Contact support</a>
