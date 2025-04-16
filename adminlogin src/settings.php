@@ -20,10 +20,11 @@ $username = $_SESSION['username'];
 $photoData = $_SESSION['photo'] ?? null;
 $email = $_SESSION['email'] ?? '';
 $PhoneNumber = $_SESSION['phonenumber'] ?? '';
-
-
 $AddressDetails = $_SESSION['addressdetails'] ?? '';
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 
 // Process form submissions
@@ -265,21 +266,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input type="email" class="form-control" id="email" name="email" value="<?php echo $email; ?>">
                             </div>
                             
-                            <div class="form-group">
-    <label for="phone">Phone Number</label>
-    <input type="tel" class="form-control" id="phone" name="phonenumber" value="<?php echo htmlspecialchars($PhoneNumber); ?>">
+                            <input type="tel" class="form-control" id="phone" name="phonenumber" 
+                            value="<?php echo htmlspecialchars($PhoneNumber); ?>" 
+                            maxlength="11" pattern="\d{11}" title="Phone Number must be 11 digits" required>
 
-</div>
                             
                             <div class="form-group">
                                 <label for="address">Address</label>
                                 <input type="tel" class="form-control" id="address" name="addressdetails" value="<?php echo htmlspecialchars($AddressDetails); ?>">
                                 </div>
 
-                            
+                                <form method="POST" enctype="multipart/form-data" action="settings.php">
                             <div class="form-group">
                                 <button type="submit" name="update_profile" class="btn btn-primary">Save Changes</button>
                             </div>
+                            </form>
                         </form>
                     </div>
                 </div>
@@ -317,51 +318,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <!-- System Settings -->
                 <div class="settings-content" id="system-settings">
-                    <div class="settings-section">
-                        <h3 class="settings-section-title">System Configuration</h3>
-                        <form action="settings.php" method="POST">
-                            <div class="form-group">
-                                <label for="school-name">School Name</label>
-                                <input type="text" class="form-control" id="school-name" name="school_name" value="Calabanga Community College">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="school-address">School Address</label>
-                                <input type="text" class="form-control" id="school-address" name="school_address" value="Calabanga, Camarines Sur, Philippines">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="school-email">School Email</label>
-                                <input type="email" class="form-control" id="school-email" name="school_email" value="info@calabangacc.edu.ph">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="school-phone">School Phone</label>
-                                <input type="tel" class="form-control" id="school-phone" name="school_phone" value="+63 54 123 4567">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="academic-year">Current Academic Year</label>
-                                <input type="text" class="form-control" id="academic-year" name="academic_year" value="2025-2026">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="semester">Current Semester</label>
-                                <select class="form-control" id="semester" name="semester">
-                                    <option value="1">First Semester</option>
-                                    <option value="2" selected>Second Semester</option>
-                                    <option value="summer">Summer</option>
-                                </select>
-                            </div>
-                            
-                          
                     
-                            
-                            <div class="form-group" style="margin-top: 20px;">
-                                <button type="submit" name="update_system" class="btn btn-primary">Save System Settings</button>
-                            </div>
-                        </form>
-                    </div>
                     
                     <div class="settings-section">
                         <h3 class="settings-section-title">Backup & Restore</h3>
