@@ -34,60 +34,7 @@ $PhoneNumber = $_SESSION['phoneNumber'] ?? '';
     <link rel="stylesheet" href="adminloginstyles.css">
 </head>
 <body>
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <img src="../Assets/eCCC_Logo.png" alt="Calabanga Community College Logo" class="sidebar-logo">
-            <h1 class="sidebar-title"><?php echo $firstName . ' ' . $lastName; ?></h1>
-            <p class="sidebar-role"><?php echo ucfirst($role); ?></p>
-        </div>
-        <div class="sidebar-body">
-            <nav class="sidebar-menu">
-                <p class="menu-category">Main</p>
-                <a href="#" class="menu-item active">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span class="menu-text">Dashboard</span>
-                </a>
-                <p class="menu-category">Management</p>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-user-graduate"></i>
-                    <span class="menu-text">Students</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-chalkboard-teacher"></i>
-                    <span class="menu-text">Faculty</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-book"></i>
-                    <span class="menu-text">Courses</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-file-alt"></i>
-                    <span class="menu-text">Grades</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-calendar"></i>
-                    <span class="menu-text">Calendar</span>
-                </a>
-                <p class="menu-category">System</p>
-                <a href="settings.php" class="menu-item">
-                    <i class="fas fa-cog"></i>
-                    <span class="menu-text">Settings</span>
-                </a>
-                <a href="usermanagement.php" class="menu-item">
-                    <i class="fas fa-users"></i>
-                    <span class="menu-text">User Management</span>
-                </a>
-                <a href="../logout.php" class="menu-item">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span class="menu-text">Logout</span>
-                </a>
-            </nav>
-            <div class="sidebar-footer">
-                &copy; 2025 Calabanga Community College
-            </div>
-        </div>
-    </aside>
+    <?php include 'sidebar.php'; ?>
 
     <!-- Main Content -->
     <main class="main-content">
