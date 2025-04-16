@@ -45,7 +45,6 @@ $errorMessage = isset($_GET['error']) ? $_GET['error'] : '';
                 <div class="error-message">Invalid username or password. Please try again.</div>
             <?php endif; ?>
 
-
             <button type="submit" class="login-btn">Log In</button>
             <a href="#" class="forgot-password" onclick="showForgotPasswordForm()">Forgot password?</a>
 

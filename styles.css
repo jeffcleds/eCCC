@@ -65,7 +65,7 @@ h1 {
 }
 
 .input-group {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     text-align: left;
 }
 
@@ -205,6 +205,7 @@ input:focus {
 .error-message {
     font-size: smaller;
     color: red;
+    margin-top: 10px;
     margin-bottom: 10px;
     text-align: center;
 }
