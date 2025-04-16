@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 
 session_start();
 
-if (!isset($_SESSION['UserID'])) {
+if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
@@ -22,14 +22,29 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $user_id = $_SESSION['UserID'];
+// Get the UserID based on the username in session
+$loggedInUsername = $_SESSION['username'];
+$stmt = $conn->prepare("SELECT UserID FROM Users WHERE Username = ?");
+$stmt->bind_param("s", $loggedInUsername);
+$stmt->execute();
+$result = $stmt->get_result();
 
-    $first_name = filter_input(INPUT_POST, 'FirstName', FILTER_SANITIZE_STRING);
-    $last_name = filter_input(INPUT_POST, 'LastName', FILTER_SANITIZE_STRING);
+if ($result->num_rows === 0) {
+    $_SESSION['error'] = "User not found";
+    header("Location: settings.php");
+    exit();
+}
+
+$user = $result->fetch_assoc();
+$user_id = $user['UserID'];
+$stmt->close();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $first_name = filter_input(INPUT_POST, 'FirstName', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $last_name = filter_input(INPUT_POST, 'LastName', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $email = filter_input(INPUT_POST, 'Email', FILTER_SANITIZE_EMAIL);
-    $phone = filter_input(INPUT_POST, 'PhoneNumber', FILTER_SANITIZE_STRING);
-    $address = filter_input(INPUT_POST, 'AddressDetails', FILTER_SANITIZE_STRING);
+    $phone = filter_input(INPUT_POST, 'PhoneNumber', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $address = filter_input(INPUT_POST, 'AddressDetails', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['error'] = "Invalid email format";
@@ -88,6 +103,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param($types, ...$params);
 
     if ($stmt->execute()) {
+        // Update session variables with the new values
+        $_SESSION['firstname'] = $first_name;
+        $_SESSION['lastname'] = $last_name;
+        $_SESSION['email'] = $email;
+        $_SESSION['phonenumber'] = $phone;  
+        $_SESSION['addressdetails'] = $address;
+        
+        if ($profile_picture_blob !== null) {
+            $_SESSION['photo'] = base64_encode($profile_picture_blob);
+        }
+        
         $_SESSION['success'] = "Profile updated successfully";
     } else {
         $_SESSION['error'] = "Error updating profile: " . $stmt->error;

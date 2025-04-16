@@ -12,6 +12,20 @@ header("Cache-Control: no-cache, no-store, must-revalidate");
 header("Pragma: no-cache");
 header("Expires: 0");
 
+// Process success/error messages
+$successMessage = '';
+$errorMessage = '';
+
+if (isset($_SESSION['success'])) {
+    $successMessage = $_SESSION['success'];
+    unset($_SESSION['success']);
+}
+
+if (isset($_SESSION['error'])) {
+    $errorMessage = $_SESSION['error'];
+    unset($_SESSION['error']);
+}
+
 // Fetch user information from the session
 $firstName = $_SESSION['firstname'] ?? 'Unknown';
 $lastName = $_SESSION['lastname'] ?? 'User';
@@ -26,17 +40,10 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-
-// Process form submissions
-$successMessage = '';
-$errorMessage = '';
-
+// Process form submissions for other settings sections
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle different form submissions based on form identifier
-    if (isset($_POST['update_profile'])) {
-        // Process profile update
-        $successMessage = 'Profile settings updated successfully!';
-    } elseif (isset($_POST['update_password'])) {
+    if (isset($_POST['update_password'])) {
         // Process password update
         $successMessage = 'Password updated successfully!';
     } elseif (isset($_POST['update_notifications'])) {
@@ -47,8 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $successMessage = 'System settings updated successfully!';
     }
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -229,7 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="settings-content active" id="profile-settings">
                     <div class="settings-section">
                         <h3 class="settings-section-title">Profile Information</h3>
-                        <form action="settings.php" method="POST">
+                        <form action="saveprofilesettings.php" method="POST" enctype="multipart/form-data">
                             <div class="avatar-upload">
                                 <div class="avatar-preview">
                                     <?php if ($photoData): ?>
@@ -241,7 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="avatar-edit">
                                     <label for="profile-photo">
                                         <i class="fas fa-camera"></i>
-                                        <input type="file" id="profile-photo" name="profile_photo" accept="image/*">
+                                        <input type="file" id="profile-photo" name="profile_picture" accept="image/*">
                                     </label>
                                 </div>
                             </div>
@@ -250,37 +255,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="form-col">
                                     <div class="form-group">
                                         <label for="first-name">First Name</label>
-                                        <input type="text" class="form-control" id="first-name" name="first_name" value="<?php echo htmlspecialchars($firstName); ?>">
+                                        <input type="text" class="form-control" id="first-name" name="FirstName" value="<?php echo htmlspecialchars($firstName); ?>">
                                     </div>
                                 </div>
                                 <div class="form-col">
                                     <div class="form-group">
                                         <label for="last-name">Last Name</label>
-                                        <input type="text" class="form-control" id="last-name" name="last_name" value="<?php echo htmlspecialchars($lastName); ?>">
+                                        <input type="text" class="form-control" id="last-name" name="LastName" value="<?php echo htmlspecialchars($lastName); ?>">
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="form-group">
                                 <label for="email">Email Address</label>
-                                <input type="email" class="form-control" id="email" name="email" value="<?php echo $email; ?>">
+                                <input type="email" class="form-control" id="email" name="Email" value="<?php echo htmlspecialchars($email); ?>">
                             </div>
                             
-                            <input type="tel" class="form-control" id="phone" name="phonenumber" 
-                            value="<?php echo htmlspecialchars($PhoneNumber); ?>" 
-                            maxlength="11" pattern="\d{11}" title="Phone Number must be 11 digits" required>
-
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="PhoneNumber" 
+                                value="<?php echo htmlspecialchars($PhoneNumber); ?>" 
+                                maxlength="11" pattern="\d{11}" title="Phone Number must be 11 digits">
+                            </div>
                             
                             <div class="form-group">
                                 <label for="address">Address</label>
-                                <input type="tel" class="form-control" id="address" name="addressdetails" value="<?php echo htmlspecialchars($AddressDetails); ?>">
-                                </div>
-
-                                <form method="POST" enctype="multipart/form-data" action="settings.php">
-                            <div class="form-group">
-                                <button type="submit" name="update_profile" class="btn btn-primary">Save Changes</button>
+                                <input type="text" class="form-control" id="address" name="AddressDetails" value="<?php echo htmlspecialchars($AddressDetails); ?>">
                             </div>
-                            </form>
+                            
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -310,16 +315,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </form>
                     </div>
-                    
-               
-                    
-             
                 </div>
                 
                 <!-- System Settings -->
                 <div class="settings-content" id="system-settings">
-                    
-                    
                     <div class="settings-section">
                         <h3 class="settings-section-title">Backup & Restore</h3>
                         <p style="font-size: 14px; margin-bottom: 15px;">Create a backup of your system data or restore from a previous backup.</p>
