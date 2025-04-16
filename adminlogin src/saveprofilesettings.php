@@ -22,7 +22,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Get the UserID based on the username in session
+// Get UserID from session
 $loggedInUsername = $_SESSION['username'];
 $stmt = $conn->prepare("SELECT UserID FROM Users WHERE Username = ?");
 $stmt->bind_param("s", $loggedInUsername);
@@ -52,10 +52,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    $profile_picture_blob = null;
+    // Handle profile picture
+    $photoData = null;
+    $photoUpdated = false;
+
     if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] == 0) {
         $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-        $max_size = 2 * 1024 * 1024;
+        $max_size = 10 * 1024 * 1024; // 10MB
 
         if (!in_array($_FILES['profile_picture']['type'], $allowed_types)) {
             $_SESSION['error'] = "Only JPG, PNG, and GIF files are allowed";
@@ -64,65 +67,71 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         if ($_FILES['profile_picture']['size'] > $max_size) {
-            $_SESSION['error'] = "File size must be less than 2MB";
+            $_SESSION['error'] = "File size must be less than 10MB";
             header("Location: settings.php");
             exit();
         }
 
-        $profile_picture_blob = file_get_contents($_FILES['profile_picture']['tmp_name']);
+        $photoData = file_get_contents($_FILES['profile_picture']['tmp_name']);
+        $photoUpdated = true;
     }
 
-    $sql = "UPDATE Users SET 
-            FirstName = ?, 
-            LastName = ?, 
-            Email = ?, 
-            PhoneNumber = ?, 
-            AddressDetails = ?";
-    
-    $params = [$first_name, $last_name, $email, $phone, $address];
-    $types = "sssss";
+    if ($photoUpdated) {
+        // With photo update
+        $sql = "UPDATE Users SET 
+                FirstName = ?, 
+                LastName = ?, 
+                Email = ?, 
+                PhoneNumber = ?, 
+                AddressDetails = ?, 
+                Photo = ?
+                WHERE UserID = ?";
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            $_SESSION['error'] = "SQL error: " . $conn->error;
+            header("Location: settings.php");
+            exit();
+        }
 
-    if ($profile_picture_blob !== null) {
-        $sql .= ", Photo = ?";
-        $params[] = $profile_picture_blob;
-        $types .= "b";
+        // Bind parameters correctly - note the order must match the SQL statement
+        $stmt->bind_param("ssssssi", $first_name, $last_name, $email, $phone, $address, $photoData, $user_id);
+    } else {
+        // Without photo update
+        $sql = "UPDATE Users SET 
+                FirstName = ?, 
+                LastName = ?, 
+                Email = ?, 
+                PhoneNumber = ?, 
+                AddressDetails = ?
+                WHERE UserID = ?";
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            $_SESSION['error'] = "SQL error: " . $conn->error;
+            header("Location: settings.php");
+            exit();
+        }
+
+        $stmt->bind_param("sssssi", $first_name, $last_name, $email, $phone, $address, $user_id);
     }
-
-    $sql .= " WHERE UserID = ?";
-    $params[] = $user_id;
-    $types .= "i";
-
-    $stmt = $conn->prepare($sql);
-
-    if ($stmt === false) {
-        $_SESSION['error'] = "SQL prepare failed: " . $conn->error;
-        header("Location: settings.php");
-        exit();
-    }
-
-    $stmt->bind_param($types, ...$params);
 
     if ($stmt->execute()) {
-        // Update session variables with the new values
         $_SESSION['firstname'] = $first_name;
         $_SESSION['lastname'] = $last_name;
         $_SESSION['email'] = $email;
-        $_SESSION['phonenumber'] = $phone;  
+        $_SESSION['phonenumber'] = $phone;
         $_SESSION['addressdetails'] = $address;
-        
-        if ($profile_picture_blob !== null) {
-            $_SESSION['photo'] = base64_encode($profile_picture_blob);
+
+        if ($photoUpdated) {
+            $_SESSION['photo'] = base64_encode($photoData);
         }
-        
+
         $_SESSION['success'] = "Profile updated successfully";
     } else {
-        $_SESSION['error'] = "Error updating profile: " . $stmt->error;
+        $_SESSION['error'] = "Update failed: " . $stmt->error;
+        error_log("Database error: " . $stmt->error); // Log the error
     }
 
     $stmt->close();
-    header("Location: settings.php");
-    exit();
-} else {
     header("Location: settings.php");
     exit();
 }

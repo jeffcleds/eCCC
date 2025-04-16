@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_result($firstName, $middleInitial, $lastName, $idNumber, $birthday, $email, $addressDetails, $phoneNumber, $role, $photo);
         $stmt->fetch();
 
-        // Save to session
+        // Save user data to session
         $_SESSION['username'] = $inputUsername;
         $_SESSION['firstname'] = $firstName;
         $_SESSION['middleinitial'] = $middleInitial;
@@ -51,6 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($photo) {
             $_SESSION['photo'] = base64_encode($photo);
         } else {
+            // If no photo is set, make sure the session value is empty or use a default.
             $_SESSION['photo'] = null;
         }
 
