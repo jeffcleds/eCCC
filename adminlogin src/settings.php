@@ -18,6 +18,13 @@ $lastName = $_SESSION['lastname'] ?? 'User';
 $role = $_SESSION['role'];
 $username = $_SESSION['username'];
 $photoData = $_SESSION['photo'] ?? null;
+$email = $_SESSION['email'] ?? '';
+$PhoneNumber = $_SESSION['phonenumber'] ?? '';
+
+
+$AddressDetails = $_SESSION['addressdetails'] ?? '';
+
+
 
 // Process form submissions
 $successMessage = '';
@@ -39,6 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $successMessage = 'System settings updated successfully!';
     }
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -210,12 +219,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="settings-tab" data-tab="security">
                         <i class="fas fa-lock"></i> Security
                     </div>
-                    <div class="settings-tab" data-tab="notifications">
-                        <i class="fas fa-bell"></i> Notifications
-                    </div>
-                    <div class="settings-tab" data-tab="appearance">
-                        <i class="fas fa-palette"></i> Appearance
-                    </div>
                     <div class="settings-tab" data-tab="system">
                         <i class="fas fa-cogs"></i> System
                     </div>
@@ -246,31 +249,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="form-col">
                                     <div class="form-group">
                                         <label for="first-name">First Name</label>
-                                        <input type="text" class="form-control" id="first-name" name="first_name" value="<?php echo $firstName; ?>">
+                                        <input type="text" class="form-control" id="first-name" name="first_name" value="<?php echo htmlspecialchars($firstName); ?>">
                                     </div>
                                 </div>
                                 <div class="form-col">
                                     <div class="form-group">
                                         <label for="last-name">Last Name</label>
-                                        <input type="text" class="form-control" id="last-name" name="last_name" value="<?php echo $lastName; ?>">
+                                        <input type="text" class="form-control" id="last-name" name="last_name" value="<?php echo htmlspecialchars($lastName); ?>">
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="form-group">
                                 <label for="email">Email Address</label>
-                                <input type="email" class="form-control" id="email" name="email" value="admin@calabangacc.edu.ph">
+                                <input type="email" class="form-control" id="email" name="email" value="<?php echo $email; ?>">
                             </div>
                             
                             <div class="form-group">
-                                <label for="phone">Phone Number</label>
-                                <input type="tel" class="form-control" id="phone" name="phone" value="+63 912 345 6789">
-                            </div>
+    <label for="phone">Phone Number</label>
+    <input type="tel" class="form-control" id="phone" name="phonenumber" value="<?php echo htmlspecialchars($PhoneNumber); ?>">
+
+</div>
                             
                             <div class="form-group">
-                                <label for="bio">Bio</label>
-                                <textarea class="form-control" id="bio" name="bio" rows="4">Administrator at Calabanga Community College with over 5 years of experience in educational management.</textarea>
-                            </div>
+                                <label for="address">Address</label>
+                                <input type="tel" class="form-control" id="address" name="addressdetails" value="<?php echo htmlspecialchars($AddressDetails); ?>">
+                                </div>
+
                             
                             <div class="form-group">
                                 <button type="submit" name="update_profile" class="btn btn-primary">Save Changes</button>
@@ -305,158 +310,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </form>
                     </div>
                     
-                    <div class="settings-section">
-                        <h3 class="settings-section-title">Two-Factor Authentication</h3>
-                        <div class="toggle-row">
-                            <span class="toggle-label">Enable Two-Factor Authentication</span>
-                            <label class="switch">
-                                <input type="checkbox">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <p style="font-size: 14px; color: #6c757d; margin-top: 10px;">
-                            Two-factor authentication adds an extra layer of security to your account by requiring more than just a password to sign in.
-                        </p>
-                    </div>
+               
                     
-                    <div class="settings-section">
-                        <h3 class="settings-section-title">Login Sessions</h3>
-                        <div style="margin-bottom: 15px;">
-                            <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
-                                <div>
-                                    <p style="margin: 0; font-weight: 500;">Chrome on Windows</p>
-                                    <p style="margin: 0; font-size: 12px; color: #6c757d;">Manila, Philippines - Current session</p>
-                                </div>
-                                <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 12px;">This Device</button>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
-                                <div>
-                                    <p style="margin: 0; font-weight: 500;">Safari on iPhone</p>
-                                    <p style="margin: 0; font-size: 12px; color: #6c757d;">Naga City, Philippines - April 15, 2025</p>
-                                </div>
-                                <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 12px;">Logout</button>
-                            </div>
-                        </div>
-                        <button class="btn btn-secondary">Logout from all devices</button>
-                    </div>
-                </div>
-                
-                <!-- Notification Settings -->
-                <div class="settings-content" id="notifications-settings">
-                    <div class="settings-section">
-                        <h3 class="settings-section-title">Notification Preferences</h3>
-                        <form action="settings.php" method="POST">
-                            <div class="toggle-row">
-                                <span class="toggle-label">Email Notifications</span>
-                                <label class="switch">
-                                    <input type="checkbox" name="email_notifications" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            
-                            <div class="toggle-row">
-                                <span class="toggle-label">Browser Notifications</span>
-                                <label class="switch">
-                                    <input type="checkbox" name="browser_notifications" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            
-                            <div class="toggle-row">
-                                <span class="toggle-label">SMS Notifications</span>
-                                <label class="switch">
-                                    <input type="checkbox" name="sms_notifications">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            
-                            <h4 style="margin-top: 20px; font-size: 16px; font-weight: 500;">Notify me about:</h4>
-                            
-                            <div class="toggle-row">
-                                <span class="toggle-label">New student registrations</span>
-                                <label class="switch">
-                                    <input type="checkbox" name="notify_student_reg" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            
-                            <div class="toggle-row">
-                                <span class="toggle-label">Course updates</span>
-                                <label class="switch">
-                                    <input type="checkbox" name="notify_course_updates" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            
-                            <div class="toggle-row">
-                                <span class="toggle-label">Faculty changes</span>
-                                <label class="switch">
-                                    <input type="checkbox" name="notify_faculty_changes" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            
-                            <div class="toggle-row">
-                                <span class="toggle-label">System updates</span>
-                                <label class="switch">
-                                    <input type="checkbox" name="notify_system_updates" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            
-                            <div class="toggle-row">
-                                <span class="toggle-label">Security alerts</span>
-                                <label class="switch">
-                                    <input type="checkbox" name="notify_security_alerts" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            
-                            <div class="form-group" style="margin-top: 20px;">
-                                <button type="submit" name="update_notifications" class="btn btn-primary">Save Preferences</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                
-                <!-- Appearance Settings -->
-                <div class="settings-content" id="appearance-settings">
-                    <div class="settings-section">
-                        <h3 class="settings-section-title">Theme Settings</h3>
-                        <div class="toggle-row">
-                            <span class="toggle-label">Dark Mode</span>
-                            <label class="switch">
-                                <input type="checkbox" id="dark-mode-toggle">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        
-                        <div style="margin-top: 20px;">
-                            <h4 style="font-size: 16px; font-weight: 500; margin-bottom: 10px;">Primary Color</h4>
-                            <div class="color-picker-container">
-                                <div class="color-option selected" style="background-color: #3498db;" data-color="#3498db"></div>
-                                <div class="color-option" style="background-color: #2ecc71;" data-color="#2ecc71"></div>
-                                <div class="color-option" style="background-color: #e74c3c;" data-color="#e74c3c"></div>
-                                <div class="color-option" style="background-color: #9b59b6;" data-color="#9b59b6"></div>
-                                <div class="color-option" style="background-color: #f39c12;" data-color="#f39c12"></div>
-                                <div class="color-option" style="background-color: #1abc9c;" data-color="#1abc9c"></div>
-                            </div>
-                        </div>
-                        
-                        <div style="margin-top: 20px;">
-                            <h4 style="font-size: 16px; font-weight: 500; margin-bottom: 10px;">Font Size</h4>
-                            <div style="display: flex; align-items: center;">
-                                <span style="font-size: 12px; margin-right: 10px;">A</span>
-                                <input type="range" min="12" max="20" value="14" class="form-control" id="font-size-slider" style="flex: 1;">
-                                <span style="font-size: 20px; margin-left: 10px;">A</span>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group" style="margin-top: 20px;">
-                            <button type="button" id="save-appearance" class="btn btn-primary">Save Appearance</button>
-                            <button type="button" id="reset-appearance" class="btn btn-secondary" style="margin-left: 10px;">Reset to Default</button>
-                        </div>
-                    </div>
+             
                 </div>
                 
                 <!-- System Settings -->
@@ -498,29 +354,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </select>
                             </div>
                             
-                            <div class="toggle-row">
-                                <span class="toggle-label">Enable Online Enrollment</span>
-                                <label class="switch">
-                                    <input type="checkbox" name="online_enrollment" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            
-                            <div class="toggle-row">
-                                <span class="toggle-label">Enable Online Grade Viewing</span>
-                                <label class="switch">
-                                    <input type="checkbox" name="online_grades" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            
-                            <div class="toggle-row">
-                                <span class="toggle-label">Enable System Maintenance Mode</span>
-                                <label class="switch">
-                                    <input type="checkbox" name="maintenance_mode">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
+                          
+                    
                             
                             <div class="form-group" style="margin-top: 20px;">
                                 <button type="submit" name="update_system" class="btn btn-primary">Save System Settings</button>
@@ -787,6 +622,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         console.log("All event listeners attached");
     });
+
+    document.addEventListener("DOMContentLoaded", function() {
+    // Get a reference to the toggle button
+    var toggleBtn = document.getElementById('toggleSidebar');
+    
+    // Check if it exists
+    if (toggleBtn) {
+        console.log("Toggle sidebar button found");
+        
+        // Remove any existing event listeners (this is a trick that might help)
+        toggleBtn.outerHTML = toggleBtn.outerHTML;
+        
+        // Get the new reference after replacing the element
+        toggleBtn = document.getElementById('toggleSidebar');
+        
+        // Add our event listener
+        toggleBtn.addEventListener('click', function(event) {
+            console.log("Toggle sidebar button clicked");
+            event.preventDefault();
+            event.stopPropagation();
+            
+            // Toggle the sidebar
+            var sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+                console.log("Sidebar toggled");
+                
+                // Toggle the overlay
+                var overlay = document.querySelector('.sidebar-overlay');
+                if (overlay) {
+                    overlay.classList.toggle('active');
+                }
+            }
+        });
+    } else {
+        console.error("Toggle sidebar button not found");
+    }
+});
 </script>
 </body>
 </html>
