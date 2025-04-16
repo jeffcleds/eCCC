@@ -293,21 +293,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Security Settings -->
                 <div class="settings-content" id="security-settings">
                     <div class="settings-section">
-                        <h3 class="settings-section-title">Change Password</h3>
-                        <form action="settings.php" method="POST">
+                        <h2 class="settings-section-title">Change Password</h2>
+                        
+                        <?php if (isset($_SESSION['password_error'])): ?>
+                            <div class="alert alert-danger">
+                                <?php echo $_SESSION['password_error']; unset($_SESSION['password_error']); ?>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if (isset($_SESSION['password_success'])): ?>
+                            <div class="alert alert-success">
+                                <?php echo $_SESSION['password_success']; unset($_SESSION['password_success']); ?>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <form action="updatepassword.php" method="POST">
                             <div class="form-group">
-                                <label for="current-password">Current Password</label>
-                                <input type="password" class="form-control" id="current-password" name="current_password" required>
+                                <label for="current_password">Current Password</label>
+                                <input type="password" id="current_password" name="current_password" class="form-control" required>
                             </div>
                             
                             <div class="form-group">
-                                <label for="new-password">New Password</label>
-                                <input type="password" class="form-control" id="new-password" name="new_password" required>
+                                <label for="new_password">New Password</label>
+                                <input type="password" id="new_password" name="new_password" class="form-control" required>
+                                <small class="form-text">Password must be at least 6 characters long</small>
                             </div>
                             
                             <div class="form-group">
-                                <label for="confirm-password">Confirm New Password</label>
-                                <input type="password" class="form-control" id="confirm-password" name="confirm_password" required>
+                                <label for="confirm_password">Confirm New Password</label>
+                                <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
                             </div>
                             
                             <div class="form-group">
@@ -316,7 +330,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </form>
                     </div>
                 </div>
-                
                 <!-- System Settings -->
                 <div class="settings-content" id="system-settings">
                     <div class="settings-section">
