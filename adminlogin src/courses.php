@@ -41,7 +41,6 @@ $PhoneNumber = $_SESSION['phoneNumber'] ?? '';
     <!-- Main Content -->
     <main class="main-content">
         <?php include 'header.php'; ?>
-        
     </main>
 
 

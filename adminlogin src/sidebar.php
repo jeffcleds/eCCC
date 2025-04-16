@@ -105,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    
     // Handle window resize
     window.addEventListener('resize', function() {
         if (window.innerWidth > 991) {
@@ -117,3 +118,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<script src="../javascript/togglesidebar.js"></script>
+<script src="../javascript/togglesidebarclose.js"></script>
