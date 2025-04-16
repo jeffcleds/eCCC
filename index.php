@@ -26,7 +26,7 @@ $errorMessage = isset($_GET['error']) ? $_GET['error'] : '';
 <body>
     <div class="login-container">
         <img src="Assets/eCCC_Logo.png" alt="eCCC Logo" class="logo">
-        <h1>Calabanga Community College</h1>
+        <h1>Calabanga Community Colleges</h1>
         <p class="subtitle">Enter your credentials to access your account</p>
 
         <!-- Main Login Form -->
