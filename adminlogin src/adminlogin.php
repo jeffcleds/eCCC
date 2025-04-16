@@ -18,7 +18,6 @@ $lastName = $_SESSION['lastname'] ?? 'User';
 $role = $_SESSION['role'];
 $username = $_SESSION['username'];
 $photoData = $_SESSION['photo'] ?? null;
-$PhoneNumber = $_SESSION['phoneNumber'] ?? '';
 ?>
 
 <!DOCTYPE html>
