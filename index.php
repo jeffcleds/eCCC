@@ -102,15 +102,15 @@ $errorMessage = isset($_GET['error']) ? $_GET['error'] : '';
     <?php endif; ?>
 
     <!-- Popup for error message -->
-    <?php if ($errorMessage): ?>
-        <div id="errorPopup" class="popup error">
-            <div class="popup-message">
-                <strong>Error!</strong><br>
-                <?php echo $errorMessage; ?>
-            </div>
-            <button class="close-btn" onclick="closePopup()">Close</button>
+    <?php if ($errorMessage && $errorMessage != "1"): ?>
+    <div id="errorPopup" class="popup error">
+        <div class="popup-message">
+            <strong>Error!</strong><br>
+            <?php echo $errorMessage; ?>
         </div>
-    <?php endif; ?>
+        <button class="close-btn" onclick="closePopup()">Close</button>
+    </div>
+<?php endif; ?>
 
     <!-- JavaScript -->
     <script>
