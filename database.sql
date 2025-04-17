@@ -114,3 +114,11 @@ CREATE TABLE Students (
     FOREIGN KEY (CourseID) REFERENCES Course(CourseID),
     UNIQUE (UserID)
 );
+
+
+
+
+
+
+---ERD
+---https://app.smartdraw.com/editor.aspx?templateId=520ece43-167b-445c-b810-fb7d35e9aba4&flags=128#depoId=66149408&credID=-77855177
