@@ -2,6 +2,7 @@
 // Start session if not already started
 include 'session_init.php';
 
+
 // Check if user is logged in
 if (!isset($_SESSION['username'])) {
     header("Location: index.php");
@@ -32,9 +33,12 @@ function connectDB() {
     return $conn;
 }
 
+
 // Initialize variables
 $successMessage = "";
 $errorMessage = "";
+
+
 
 // Handle user operations (add, edit, delete)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -104,7 +108,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->bind_param("sssssssi", $idNumber, $firstName, $middleInitial, $lastName, $email, $username, $role, $userId);
             } else {
                 // Update user with new password
-                $conn->real_escape_string($_POST['password']);
+                $conn->real_escape_string($_POST['passwords']);
                 $stmt = $conn->prepare("UPDATE Users SET IDNumber = ?, FirstName = ?, MiddleInitial = ?, LastName = ?, Email = ?, Username = ?, Password = ?, Role = ? WHERE UserID = ?");
                 $stmt->bind_param("sssssssssi", $idNumber, $firstName, $middleInitial, $lastName, $email, $username, $password, $role, $userId);
             }
@@ -698,13 +702,14 @@ $roles = getRoles();
 </head>
 <body>
     <!-- Sidebar -->
-    <?php include 'sidebar.php'; ?>
+  <?php include 'sidebar.php'; ?>
     
     <!-- Main Content -->
     <main class="main-content">
         <?php include 'header.php'; ?>
         
-        <div class="users-container">
+        <div class="users-container">   
+            
             <div class="users-header">
                 <h1>User Management</h1>
                 <p>Add, edit, and manage user accounts</p>

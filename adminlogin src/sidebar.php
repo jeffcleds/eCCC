@@ -1,5 +1,10 @@
 <?php
 // Get current page name for active menu highlighting
+// At the very top of sidebar.php
+if(!isset($_SESSION)) {
+    include 'session_init.php'; // or session_start();
+}
+
 $currentPage = basename($_SERVER['PHP_SELF']);
 
 // Function to check if menu item is active
@@ -14,7 +19,9 @@ function isActive($page, $currentPage) {
     <div class="sidebar-header">
         <img src="../Assets/eCCC_Logo.png" alt="Calabanga Community College Logo" class="sidebar-logo">
         <h1 class="sidebar-title"><?php echo $firstName . ' ' . $lastName; ?></h1>
-        <p class="sidebar-role"><?php echo ucfirst($role); ?></p>
+        <p class="sidebar-role" style="color: white !important; font-size: 15px !important;">
+    <?php echo ucfirst($_SESSION['role']); ?>
+</p>
     </div>
     <div class="sidebar-body">
         <nav class="sidebar-menu">

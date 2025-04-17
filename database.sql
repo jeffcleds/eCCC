@@ -31,6 +31,7 @@ VALUES
 CREATE TABLE Course (
     CourseID INT AUTO_INCREMENT PRIMARY KEY,
     CourseName VARCHAR(100) NOT NULL
+  
 );
 
 CREATE TABLE YearLevel (
@@ -52,3 +53,28 @@ CREATE TABLE ForgotPasswordSubmissions (
     IDNumber VARCHAR(100),
     FOREIGN KEY (IDNumber) REFERENCES Users(IDNumber)
 );
+
+CREATE TABLE Events (
+    EventID INT AUTO_INCREMENT PRIMARY KEY,
+    Title VARCHAR(255) NOT NULL,
+    Description TEXT,
+    StartDate DATETIME NOT NULL,
+    EndDate DATETIME NOT NULL,
+    Location VARCHAR(255),
+    EventType VARCHAR(50) NOT NULL,
+    Color VARCHAR(20) DEFAULT '#4361ee',
+    IsAllDay BOOLEAN DEFAULT FALSE,
+    CreatedBy INT,
+    DateCreated DATETIME DEFAULT CURRENT_TIMESTAMP,
+    LastModified DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (CreatedBy) REFERENCES Users(UserID)
+);
+
+INSERT INTO Events 
+(Title, Description, StartDate, EndDate, Location, EventType, Color, IsAllDay, CreatedBy)
+VALUES
+('Faculty Meeting', 'Monthly meeting to discuss academic matters.', '2025-04-20 09:00:00', '2025-04-20 11:00:00', 'Main Conference Hall', 'Meeting', '#ff6b6b', FALSE, 1),
+('Student Orientation', 'Orientation program for incoming freshmen.', '2025-05-01 08:00:00', '2025-05-01 17:00:00', 'Auditorium', 'Orientation', '#1dd1a1', FALSE, 2),
+('Holiday - Independence Day', 'School closed in observance of Independence Day.', '2025-06-12 00:00:00', '2025-06-12 23:59:59', '', 'Holiday', '#feca57', TRUE, 3),
+('Final Exams Begin', 'Start of final exams for the semester.', '2025-05-15 08:00:00', '2025-05-15 17:00:00', 'Various Classrooms', 'Exam', '#5f27cd', FALSE, 4),
+('System Maintenance', 'Scheduled system maintenance window.', '2025-04-25 22:00:00', '2025-04-26 02:00:00', 'IT Department', 'Maintenance', '#576574', FALSE, 2);
