@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_password'])) {
 
     if ($conn->connect_error) {
         $_SESSION['password_error'] = "Database connection failed";
-        header("Location: settings.php");
+        header("Location: settings.php?tab=security");
         exit();
     }
 
@@ -29,13 +29,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_password'])) {
     // Validate
     if (strlen($new_password) < 6) {
         $_SESSION['password_error'] = "Password must be at least 6 characters";
-        header("Location: settings.php");
+        header("Location: settings.php?tab=security");
         exit();
     }
 
     if ($new_password !== $confirm_password) {
         $_SESSION['password_error'] = "New passwords don't match";
-        header("Location: settings.php");
+        header("Location: settings.php?tab=security");
         exit();
     }
 
@@ -43,14 +43,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_password'])) {
     $result = $conn->query("SELECT Password FROM Users WHERE Username = '$username'");
     if ($result->num_rows === 0) {
         $_SESSION['password_error'] = "User not found";
-        header("Location: settings.php");
+        header("Location: settings.php?tab=security");
         exit();
     }
 
     $user = $result->fetch_assoc();
     if ($current_password !== $user['Password']) {
         $_SESSION['password_error'] = "Current password is incorrect";
-        header("Location: settings.php");
+        header("Location: settings.php?tab=security");
         exit();
     }
 
@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_password'])) {
     }
 
     $conn->close();
-    header("Location: settings.php");
-    exit();
+    header("Location: settings.php?tab=security");
+        exit();
 }
 ?>

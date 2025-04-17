@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $inputPassword = $_POST['Password'];
 
     // Prepare query with PhoneNumber and AddressDetails included
-    $stmt = $conn->prepare("SELECT FirstName, MiddleInitial, LastName, IDNumber, Birthday, Email, AddressDetails, PhoneNumber, Role, Photo FROM Users WHERE Username = ? AND Password = ?");
+    $stmt = $conn->prepare("SELECT FirstName, MiddleInitial, LastName, IDNumber, Birthday, AddressDetails, PhoneNumber, Gender, Email, Role, Photo FROM Users WHERE Username = ? AND Password = ?");
     $stmt->bind_param("ss", $inputUsername, $inputPassword);
     $stmt->execute();
     $stmt->store_result();
@@ -32,7 +32,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if user exists
     if ($stmt->num_rows > 0) {
         // Bind all user data
-        $stmt->bind_result($firstName, $middleInitial, $lastName, $idNumber, $birthday, $email, $addressDetails, $phoneNumber, $role, $photo);
+        $stmt->bind_result($firstName, $middleInitial, $lastName, $idNumber, $birthday, 
+        $addressDetails, $phoneNumber, $gender, $email, $role, $photo);
         $stmt->fetch();
 
         // Save user data to session
@@ -42,6 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['lastname'] = $lastName;
         $_SESSION['idnumber'] = $idNumber;
         $_SESSION['birthday'] = $birthday;
+        $_SESSION['gender'] = $gender;
         $_SESSION['email'] = $email;
         $_SESSION['phonenumber'] = $phoneNumber;
         $_SESSION['addressdetails'] = $addressDetails;

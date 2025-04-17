@@ -1,16 +1,6 @@
 <?php
-session_start();
+require_once 'session_init.php';
 
-// Redirect if the user is not an the expected role
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../index.php");
-    exit();
-}
-
-// Prevent caching
-header("Cache-Control: no-cache, no-store, must-revalidate");
-header("Pragma: no-cache");
-header("Expires: 0");
 
 // Process success/error messages
 $successMessage = '';
@@ -25,16 +15,6 @@ if (isset($_SESSION['error'])) {
     $errorMessage = $_SESSION['error'];
     unset($_SESSION['error']);
 }
-
-// Fetch user information from the session
-$firstName = $_SESSION['firstname'] ?? 'Unknown';
-$lastName = $_SESSION['lastname'] ?? 'User';
-$role = $_SESSION['role'];
-$username = $_SESSION['username'];
-$photoData = $_SESSION['photo'] ?? null;
-$email = $_SESSION['email'] ?? '';
-$PhoneNumber = $_SESSION['phonenumber'] ?? '';
-$AddressDetails = $_SESSION['addressdetails'] ?? '';
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -100,17 +80,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p class="settings-description">Manage your account settings and preferences</p>
                 </div>
               
-                <div class="settings-tabs">
-                    <div class="settings-tab active" data-tab="profile">
-                        <i class="fas fa-user"></i> Profile
-                    </div>
-                    <div class="settings-tab" data-tab="security">
-                        <i class="fas fa-lock"></i> Security
-                    </div>
-                    <div class="settings-tab" data-tab="system">
-                        <i class="fas fa-cogs"></i> System
-                    </div>
-                </div>
+                <!-- Tabs -->
+<div class="settings-tabs">
+    <div class="settings-tab active" data-tab="profile">
+        <i class="fas fa-user"></i> Profile
+    </div>
+    <div class="settings-tab" data-tab="security">
+        <i class="fas fa-lock"></i> Security
+    </div>
+    <div class="settings-tab" data-tab="system">
+        <i class="fas fa-cogs"></i> System
+    </div>
+</div>
+
+
                 
                 <!-- Profile Settings -->
                 <div class="settings-content active" id="profile-settings">
@@ -253,31 +236,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Settings tabs functionality
-        var tabs = document.querySelectorAll('.settings-tab');
-        var contents = document.querySelectorAll('.settings-content');
-        
-        tabs.forEach(function(tab) {
-            tab.addEventListener('click', function() {
-                // Remove active class from all tabs
-                tabs.forEach(function(t) {
-                    t.classList.remove('active');
-                });
-                
-                // Add active class to clicked tab
-                this.classList.add('active');
-                
-                // Hide all content sections
-                contents.forEach(function(content) {
-                    content.classList.remove('active');
-                });
-                
-                // Show the corresponding content section
-                var tabId = this.getAttribute('data-tab');
-                document.getElementById(tabId + '-settings').classList.add('active');
-            });
-        });
+   document.addEventListener("DOMContentLoaded", function () {
+    var tabs = document.querySelectorAll('.settings-tab');
+    var contents = document.querySelectorAll('.settings-content');
+
+    function activateTab(tabId) {
+      tabs.forEach(t => t.classList.remove('active'));
+      contents.forEach(c => c.classList.remove('active'));
+
+      var tabToActivate = document.querySelector('.settings-tab[data-tab="' + tabId + '"]');
+      var contentToActivate = document.getElementById(tabId + '-settings');
+
+      if (tabToActivate && contentToActivate) {
+        tabToActivate.classList.add('active');
+        contentToActivate.classList.add('active');
+      }
+    }
+
+    var params = new URLSearchParams(window.location.search);
+    var initialTab = params.get('tab');
+    if (initialTab) {
+      activateTab(initialTab);
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var tabId = this.getAttribute('data-tab');
+        history.pushState(null, '', '?tab=' + tabId);
+        activateTab(tabId);
+      });
+    });
+
+    window.addEventListener('popstate', function () {
+      var params = new URLSearchParams(window.location.search);
+      var tabId = params.get('tab') || 'profile';
+      activateTab(tabId);
+    });
+
+
         
         // Profile photo preview
         var photoInput = document.getElementById('profile-photo');

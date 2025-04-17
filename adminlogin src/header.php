@@ -24,7 +24,7 @@ $currentTitle = $pageTitles[$currentPage] ?? 'Administration Panel';
     <div class="header-actions">
         <button class="notification-btn" id="notificationButton">
             <i class="fas fa-bell"></i>
-            <span class="notification-badge">3</span>
+            <span class="notification-badge">2</span>
         </button>
         <div id="notification-dropdown" class="notification-dropdown">
             <div class="notification-header">
