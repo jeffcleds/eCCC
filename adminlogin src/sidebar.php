@@ -1,5 +1,10 @@
 <?php
 // Get current page name for active menu highlighting
+// At the very top of sidebar.php
+if(!isset($_SESSION)) {
+    include 'session_init.php'; // or session_start();
+}
+
 $currentPage = basename($_SERVER['PHP_SELF']);
 
 // Function to check if menu item is active
@@ -14,7 +19,9 @@ function isActive($page, $currentPage) {
     <div class="sidebar-header">
         <img src="../Assets/eCCC_Logo.png" alt="Calabanga Community College Logo" class="sidebar-logo">
         <h1 class="sidebar-title"><?php echo $firstName . ' ' . $lastName; ?></h1>
-        <p class="sidebar-role"><?php echo ucfirst($role); ?></p>
+        <p class="sidebar-role" style="color: white !important; font-size: 15px !important;">
+    <?php echo ucfirst($_SESSION['role']); ?>
+</p>
     </div>
     <div class="sidebar-body">
         <nav class="sidebar-menu">
@@ -22,6 +29,9 @@ function isActive($page, $currentPage) {
             <a href="adminlogin.php" class="menu-item <?php echo isActive('adminlogin', $currentPage); ?>">
                 <i class="fas fa-tachometer-alt"></i>
                 <span class="menu-text">Dashboard</span>
+                <a href="profile.php" class="menu-item <?php echo isActive('profile', $currentPage); ?>">
+                <i class="fa-solid fa-user"></i>
+                <span class="menu-text">Profile</span>
             </a>
             
             <p class="menu-category">Management</p>
@@ -119,5 +129,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-    <script src="../javascript/togglesidebar.js"></script>
-    <script src="../javascript/togglesidebarclose.js"></script>
+<script src="../javascript/togglesidebar.js"></script>
+<script src="../javascript/togglesidebarclose.js"></script>

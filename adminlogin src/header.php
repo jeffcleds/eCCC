@@ -2,6 +2,7 @@
 // Define page titles
 $pageTitles = [
     'adminlogin.php' => 'Dashboard',
+    'profile.php' => 'Profile',
     'settings.php' => 'Settings',
     'usermanagement.php' => 'User Management',
     'students.php' => 'Student Management',
@@ -65,7 +66,7 @@ $currentTitle = $pageTitles[$currentPage] ?? 'Administration Panel';
             </div>
             <div id="dropdown-menu" class="dropdown-content">
                 <b class="rightsidepicname"><?php echo $firstName . ' ' . $lastName; ?></b>
-                <p class="rightsidepicrole"><?php echo ucfirst($role); ?></p>
+                <p class="rightsidepicrole"style="color: white !important; font-size: 15px !important;"><?php echo ucfirst($role); ?></p>
                 <a href="profile.php"><i class="fa-solid fa-user"></i> Profile</a>
                 <a href="settings.php"><i class="fas fa-cog"></i> Settings</a>
                 <a href="../logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
