@@ -1,11 +1,11 @@
 <?php
 session_start();
 
-// Enable error reporting (disable in production)
+// Enable error reporting for debugging
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Connect to database
+// Database connection
 $servername = "localhost";
 $dbUsername = "root";
 $dbPassword = "";
@@ -23,34 +23,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $inputUsername = $_POST['Username'];
     $inputPassword = $_POST['Password'];
 
-    // Prepare and bind statement to prevent SQL injection
-    $stmt = $conn->prepare("SELECT FirstName, MiddleInitial, LastName, IDNumber, Birthday, Email, AddressDetails, Role, Photo FROM Users WHERE Username = ? AND Password = ?");
+    // Prepare query with PhoneNumber and AddressDetails included
+    $stmt = $conn->prepare("SELECT FirstName, MiddleInitial, LastName, IDNumber, Birthday, AddressDetails, PhoneNumber, Gender, Email, Role, Photo FROM Users WHERE Username = ? AND Password = ?");
     $stmt->bind_param("ss", $inputUsername, $inputPassword);
     $stmt->execute();
     $stmt->store_result();
 
+    // Check if user exists
     if ($stmt->num_rows > 0) {
-        $stmt->bind_result($firstName, $middleInitial, $lastName, $idNumber, $birthday, $email, $address, $role, $photo);
+        // Bind all user data
+        $stmt->bind_result($firstName, $middleInitial, $lastName, $idNumber, $birthday, 
+        $addressDetails, $phoneNumber, $gender, $email, $role, $photo);
         $stmt->fetch();
 
-        // ✅ Save session data
+        // Save user data to session
         $_SESSION['username'] = $inputUsername;
         $_SESSION['firstname'] = $firstName;
         $_SESSION['middleinitial'] = $middleInitial;
         $_SESSION['lastname'] = $lastName;
         $_SESSION['idnumber'] = $idNumber;
         $_SESSION['birthday'] = $birthday;
+        $_SESSION['gender'] = $gender;
         $_SESSION['email'] = $email;
-        $_SESSION['address'] = $address;
+        $_SESSION['phonenumber'] = $phoneNumber;
+        $_SESSION['addressdetails'] = $addressDetails;
         $_SESSION['role'] = $role;
 
-        // Check if the photo exists (handle the case where no photo is uploaded)
+        // Handle profile photo
         if ($photo) {
-            // Convert the binary data to base64 for displaying in an img tag
             $_SESSION['photo'] = base64_encode($photo);
         } else {
-            // Set a default image if no photo is available
-            $_SESSION['photo'] = null; // or use a default image path
+            // If no photo is set, make sure the session value is empty or use a default.
+            $_SESSION['photo'] = null;
         }
 
         // Redirect based on role
@@ -70,10 +74,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             default:
                 echo "<script>alert('Unknown role.'); window.location.href='index.php';</script>";
         }
-        exit;
+
+        exit();
     } else {
         header("Location: index.php?error=1");
-        exit;
+        exit();
     }
 
     $stmt->close();

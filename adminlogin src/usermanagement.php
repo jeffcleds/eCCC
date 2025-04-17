@@ -22,6 +22,7 @@ require_once 'session_init.php';
     <!-- Main Content -->
     <main class="main-content">
         <?php include 'header.php'; ?>
+        
     </main>
 
 

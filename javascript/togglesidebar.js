@@ -14,3 +14,4 @@ document.addEventListener('click', function(event) {
         sidebar.classList.remove('active');
     }
 });
+
