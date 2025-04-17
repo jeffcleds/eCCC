@@ -2,6 +2,7 @@
 // Define page titles
 $pageTitles = [
     'adminlogin.php' => 'Dashboard',
+    'profile.php' => 'Profile',
     'settings.php' => 'Settings',
     'usermanagement.php' => 'User Management',
     'students.php' => 'Student Management',
