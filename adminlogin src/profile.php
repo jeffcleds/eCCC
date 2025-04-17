@@ -820,9 +820,7 @@ require_once 'session_init.php';
                                 </div>
                                 <div class="form-group">
                                     <label for="phoneNumber">Phone Number</label>
-                                    <input type="tel" id="phoneNumber" name="phoneNumber" value="<?php echo $user['PhoneNumber']; ?>" pattern="[0-9]{11}" maxlength="11">
-                  value="<?php echo $user['PhoneNumber']; ?>" pattern="[0-9]{11}" maxlength="11">
-                                    <small style="color: #888;">Format: 09XXXXXXXXX (11 digits)</small>
+                                    <input type="tel" id="phoneNumber" name="phoneNumber" value="<?php echo $user['PhoneNumber']; ?>" pattern="[0-9]{11}" maxlength="11"> 
                                 </div>
                             </div>
                             <div class="form-actions">
