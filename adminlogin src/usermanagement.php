@@ -9,12 +9,6 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Check if user is admin
-$isAdmin = ($_SESSION['role'] === 'admin');
-if (!$isAdmin) {
-    header("Location: dashboard.php");
-    exit();
-}
 
 // Database connection function
 function connectDB() {
@@ -145,7 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Get users with filtering and pagination
-function getUsers($search = '', $role = '', $status = '', $page = 1, $perPage = 10) {
+function getUsers($search = '', $role = '', $page = 1, $perPage = 10) {
     $conn = connectDB();
     $users = [];
     $totalUsers = 0;
@@ -178,12 +172,7 @@ function getUsers($search = '', $role = '', $status = '', $page = 1, $perPage = 
         $types .= "s";
     }
     
-    if (!empty($status)) {
-        $query .= " AND Status = ?";
-        $countQuery .= " AND Status = ?";
-        $params[] = $status;
-        $types .= "s";
-    }
+
     
     $query .= " ORDER BY LastName, FirstName LIMIT ?, ?";
     $params[] = $offset;
@@ -246,12 +235,11 @@ function getRoles() {
 // Process filters and pagination
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $role = isset($_GET['role']) ? $_GET['role'] : '';
-$status = isset($_GET['status']) ? $_GET['status'] : '';
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $perPage = 10;
 
 // Get users
-$usersData = getUsers($search, $role, $status, $page, $perPage);
+$usersData = getUsers($search, $role, $page, $perPage);
 $users = $usersData['users'];
 $totalUsers = $usersData['total'];
 $totalPages = ceil($totalUsers / $perPage);
@@ -805,10 +793,10 @@ $roles = getRoles();
             <!-- Pagination -->
             <?php if ($totalPages > 1): ?>
                 <div class="pagination">
-                    <a href="?search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role); ?>&status=<?php echo urlencode($status); ?>&page=1" class="pagination-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
+                    <a href="?search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role); ?>&page=1" class="pagination-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
                         <i class="fas fa-angle-double-left"></i>
                     </a>
-                    <a href="?search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role); ?>&status=<?php echo urlencode($status); ?>&page=<?php echo $page - 1; ?>" class="pagination-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
+                    <a href="?search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role); ?>&page=<?php echo $page - 1; ?>" class="pagination-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
                         <i class="fas fa-angle-left"></i>
                     </a>
                     
@@ -818,15 +806,15 @@ $roles = getRoles();
                     
                     for ($i = $startPage; $i <= $endPage; $i++):
                     ?>
-                        <a href="?search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role); ?>&status=<?php echo urlencode($status); ?>&page=<?php echo $i; ?>" class="pagination-item <?php echo $i == $page ? 'active' : ''; ?>">
+                        <a href="?search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role); ?>&page=<?php echo $i; ?>" class="pagination-item <?php echo $i == $page ? 'active' : ''; ?>">
                             <?php echo $i; ?>
                         </a>
                     <?php endfor; ?>
                     
-                    <a href="?search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role); ?>&status=<?php echo urlencode($status); ?>&page=<?php echo $page + 1; ?>" class="pagination-item <?php echo $page >= $totalPages ? 'disabled' : ''; ?>">
+                    <a href="?search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role); ?>&page=<?php echo $page + 1; ?>" class="pagination-item <?php echo $page >= $totalPages ? 'disabled' : ''; ?>">
                         <i class="fas fa-angle-right"></i>
                     </a>
-                    <a href="?search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role); ?>&status=<?php echo urlencode($status); ?>&page=<?php echo $totalPages; ?>" class="pagination-item <?php echo $page >= $totalPages ? 'disabled' : ''; ?>">
+                    <a href="?search=<?php echo urlencode($search); ?>&role=<?php echo urlencode($role); ?>&page=<?php echo $totalPages; ?>" class="pagination-item <?php echo $page >= $totalPages ? 'disabled' : ''; ?>">
                         <i class="fas fa-angle-double-right"></i>
                     </a>
                 </div>

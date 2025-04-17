@@ -552,7 +552,7 @@
 
         .rightsidepicrole{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333333a3;
+            color: #333333a3 !important;
             text-decoration: none;
             display: block;
             text-align: center;

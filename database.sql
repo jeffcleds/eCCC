@@ -31,13 +31,27 @@ VALUES
 CREATE TABLE Course (
     CourseID INT AUTO_INCREMENT PRIMARY KEY,
     CourseName VARCHAR(100) NOT NULL
-  
 );
+
+INSERT INTO Course (CourseName)
+VALUES
+('Bachelor of Science in Education Major in MAPEH'),
+('Bachelor of Science in Education Major in English'),
+('Bachelor of Science in Education Major in Science'),
+('Bachelor of Science in Education Major in Math'),
+('Bachelor of Science in Entrepreneurship');
 
 CREATE TABLE YearLevel (
     YearLevelID INT AUTO_INCREMENT PRIMARY KEY,
     YearLevelName VARCHAR(50) NOT NULL
 );
+
+INSERT INTO YearLevel (YearLevelName)
+VALUES
+('First Year'),
+('Second Year'),
+('Third Year'),
+('Fourth Year');
 
 CREATE TABLE ContactSupportSubmissions (
     TicketNumber INT AUTO_INCREMENT PRIMARY KEY,
@@ -78,3 +92,25 @@ VALUES
 ('Holiday - Independence Day', 'School closed in observance of Independence Day.', '2025-06-12 00:00:00', '2025-06-12 23:59:59', '', 'Holiday', '#feca57', TRUE, 3),
 ('Final Exams Begin', 'Start of final exams for the semester.', '2025-05-15 08:00:00', '2025-05-15 17:00:00', 'Various Classrooms', 'Exam', '#5f27cd', FALSE, 4),
 ('System Maintenance', 'Scheduled system maintenance window.', '2025-04-25 22:00:00', '2025-04-26 02:00:00', 'IT Department', 'Maintenance', '#576574', FALSE, 2);
+
+CREATE TABLE Subjects (
+    SubjectID INT AUTO_INCREMENT PRIMARY KEY,
+    SubjectCode VARCHAR(20) NOT NULL UNIQUE,
+    SubjectName VARCHAR(100) NOT NULL,
+    Units INT NOT NULL,
+    CourseID INT NOT NULL,
+    YearLevelID INT NOT NULL,
+    FOREIGN KEY (CourseID) REFERENCES Course(CourseID),
+    FOREIGN KEY (YearLevelID) REFERENCES YearLevel(YearLevelID)
+);
+
+CREATE TABLE Students (
+    StudentID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID INT NOT NULL,
+    YearLevelID INT NOT NULL,
+    CourseID INT NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (YearLevelID) REFERENCES YearLevel(YearLevelID),
+    FOREIGN KEY (CourseID) REFERENCES Course(CourseID),
+    UNIQUE (UserID)
+);

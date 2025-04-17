@@ -555,12 +555,12 @@ $departments = getDepartments();
         }
 
         .btn-primary {
-            background-color: #4361ee;
+            background-color: #0a2342;
             color: white;
         }
 
         .btn-primary:hover {
-            background-color: #3a56d4;
+            background-color: #153e6f;
         }
 
         .btn-outline {
@@ -642,12 +642,12 @@ $departments = getDepartments();
         }
 
         .edit-btn {
-            background-color: #4361ee;
+            background-color: #0a2342;
             color: white;
         }
 
         .edit-btn:hover {
-            background-color: #3a56d4;
+            background-color: #153e6f;
         }
 
         .delete-btn {
@@ -917,7 +917,7 @@ $departments = getDepartments();
                                 <th>Actions</th>
                                 <?php endif; ?>
                               
-                                <th>Actions</th>
+                          
                                 <?php endif; ?>
                             </tr>
                         </thead>
@@ -981,13 +981,13 @@ $departments = getDepartments();
         <div class="modal-overlay" id="addCourseModal">
             <div class="modal">
                 <div class="modal-header">
-                    <h2 class="modal-title">Add New Course</h2>
+                    <h2 class="modal-title">Add New Subject</h2>
                     <button class="modal-close" id="closeAddCourseModal">&times;</button>
                 </div>
                 <form id="addCourseForm" method="post">
                     <input type="hidden" name="add_course" value="1">
                     <div class="form-group">
-                        <label for="course_code">Course Code</label>
+                        <label for="course_code">Subject Code</label>
                         <input type="text" id="course_code" name="course_code" required>
                     </div>
                     <div class="form-group">

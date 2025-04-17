@@ -200,8 +200,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_photo'])) {
             if ($stmt->execute()) {
                 // Update session variable
                 $_SESSION['photo'] = base64_encode($imageData);
-                
-                $successMessage = "Profile photo updated successfully!";
+                $successMessage = "Profile photo updated successfully! Refresh the page";
+
             } else {
                 $errorMessage = "Error updating profile photo: " . $conn->error;
             }
@@ -227,7 +227,7 @@ $user = [
     'AddressDetails' => $_SESSION['addressdetails'],
     'PhoneNumber' => $_SESSION['phonenumber'],
     'Gender' => $_SESSION['gender'],
-    'Photo' => $_SESSION['photo'], // Already base64 encoded in login.php
+    'Photo' => $_SESSION['photo'], 
     'Username' => $_SESSION['username'],
     'Role' => $_SESSION['role']
 ];
