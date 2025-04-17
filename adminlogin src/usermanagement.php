@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $lastName = $conn->real_escape_string($_POST['last_name']);
         $email = $conn->real_escape_string($_POST['email']);
         $username = $conn->real_escape_string($_POST['username']);
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password
+        $password = $conn->real_escape_string($_POST['password']);
         $role = $conn->real_escape_string($_POST['role']);
         
         
@@ -104,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->bind_param("sssssssi", $idNumber, $firstName, $middleInitial, $lastName, $email, $username, $role, $userId);
             } else {
                 // Update user with new password
-                $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                $conn->real_escape_string($_POST['password']);
                 $stmt = $conn->prepare("UPDATE Users SET IDNumber = ?, FirstName = ?, MiddleInitial = ?, LastName = ?, Email = ?, Username = ?, Password = ?, Role = ? WHERE UserID = ?");
                 $stmt->bind_param("sssssssssi", $idNumber, $firstName, $middleInitial, $lastName, $email, $username, $password, $role, $userId);
             }
