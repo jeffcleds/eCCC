@@ -22,6 +22,9 @@ function isActive($page, $currentPage) {
             <a href="adminlogin.php" class="menu-item <?php echo isActive('adminlogin', $currentPage); ?>">
                 <i class="fas fa-tachometer-alt"></i>
                 <span class="menu-text">Dashboard</span>
+                <a href="profile.php" class="menu-item <?php echo isActive('profile', $currentPage); ?>">
+                <i class="fa-solid fa-user"></i>
+                <span class="menu-text">Profile</span>
             </a>
             
             <p class="menu-category">Management</p>
@@ -119,5 +122,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-    <script src="../javascript/togglesidebar.js"></script>
-    <script src="../javascript/togglesidebarclose.js"></script>
+<script src="../javascript/togglesidebar.js"></script>
+<script src="../javascript/togglesidebarclose.js"></script>
