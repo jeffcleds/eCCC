@@ -1,0 +1,45 @@
+  _   _  ____ _______ ______  _____ 
+ | \ | |/ __ \__   __|  ____|/ ____|
+ |  \| | |  | | | |  | |__  | (___  
+ | . ` | |  | | | |  |  __|  \___ \ 
+ | |\  | |__| | | |  | |____ ____) |
+ |_| \_|\____/  |_|  |______|_____/ 
+ for admin role dashboard                                   
+                                    
+adminlogin.php
+[❌] Dashboard is still not linked to database. 
+
+profile.php
+[✅] profile.php is completed. 
+
+students.php
+[✅] students.php is displaying students.
+[❌] change the color of the buttons to 0a2342 | 153e6f.
+[❌] Make responsive to mobile.
+
+faculty.php
+[✅] faculty.php is displaying faculty.
+[❌] change the color of the buttons to 0a2342 | 153e6f.
+[❌] Make responsive to mobile.
+
+subjects.php 
+[❌] subjects.php is displaying courses database LMAO.
+[❌] change the color of the buttons to 0a2342 | 153e6f.
+[❌] Make responsive to mobile.
+
+grades.php
+[❌] Doesn't work.
+[❌] Thinking about deleting it.
+
+calendar.php
+[❌] Doesn't work.
+[❌] No database yet.
+
+settings.php
+[✅] Working properly.
+[❌] System tab backup no functionality yet.
+
+usermanagement.php
+[✅] Working properly.
+[❌] Make responsive to mobile.
+[❌] Pagination is shit.
