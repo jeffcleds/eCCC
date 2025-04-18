@@ -1,7 +1,9 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-// Redirect if the user is not an the expected role
+// Redirect if the user is not the expected role
 if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../index.php");
     exit();
@@ -26,4 +28,3 @@ $gender = $_SESSION['gender'] ?? '';
 $PhoneNumber = $_SESSION['phonenumber'] ?? '';
 $AddressDetails = $_SESSION['addressdetails'] ?? '';
 ?>
-

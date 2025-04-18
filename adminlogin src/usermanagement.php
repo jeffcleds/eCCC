@@ -840,7 +840,9 @@ $roles = getRoles();
                             <select id="role" name="role" required>
                                 <option value="student">Student</option>
                                 <option value="faculty">Faculty</option>
+                                <option value="registrar">Registrar</option>
                                 <option value="admin">Admin</option>
+                                
                             </select>
                         </div>
                     </div>
@@ -900,6 +902,7 @@ $roles = getRoles();
                             <select id="edit_role" name="role" required>
                                 <option value="student">Student</option>
                                 <option value="faculty">Faculty</option>
+                                <option value="registrar">Registrar</option>
                                 <option value="admin">Admin</option>
                             </select>
                         </div>
