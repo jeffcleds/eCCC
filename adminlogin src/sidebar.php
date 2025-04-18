@@ -19,8 +19,7 @@ function isActive($page, $currentPage) {
     <div class="sidebar-header">
         <img src="../Assets/eCCC_Logo.png" alt="Calabanga Community College Logo" class="sidebar-logo">
         <h1 class="sidebar-title"><?php echo $firstName . ' ' . $lastName; ?></h1>
-        <p class="sidebar-role" style="color: white !important; font-size: 15px !important;">
-    <?php echo ucfirst($_SESSION['role']); ?>
+        <p class="sidebar-role" style="color: white !important; font-size: 15px !important;"><?php echo ucfirst($_SESSION['role']); ?>
 </p>
     </div>
     <div class="sidebar-body">
@@ -43,9 +42,9 @@ function isActive($page, $currentPage) {
                 <i class="fas fa-chalkboard-teacher"></i>
                 <span class="menu-text">Faculty</span>
             </a>
-            <a href="courses.php" class="menu-item <?php echo isActive('courses', $currentPage); ?>">
+            <a href="subjects.php" class="menu-item <?php echo isActive('subjects', $currentPage); ?>">
                 <i class="fas fa-book"></i>
-                <span class="menu-text">Courses</span>
+                <span class="menu-text">Subjects</span>
             </a>
             <a href="grades.php" class="menu-item <?php echo isActive('grades', $currentPage); ?>">
                 <i class="fas fa-file-alt"></i>
