@@ -1,13 +1,20 @@
-  _   _  ____ _______ ______  _____ 
- | \ | |/ __ \__   __|  ____|/ ____|
- |  \| | |  | | | |  | |__  | (___  
- | . ` | |  | | | |  |  __|  \___ \ 
- | |\  | |__| | | |  | |____ ____) |
- |_| \_|\____/  |_|  |______|_____/ 
+ _   _  ____ _______ ______  _____ 
+| \ | |/ __ \__   __|  ____|/ ____|
+|  \| | |  | | | |  | |__  | (___  
+| . ` | |  | | | |  |  __|  \___ \ 
+| |\  | |__| | | |  | |____ ____) |
+|_| \_|\____/  |_|  |______|_____/ 
  for admin role dashboard                                   
                                     
 adminlogin.php
 [❌] Dashboard is still not linked to database. 
+
+sidebar.php
+[❌] Error on the debug console but working properly.
+
+header.php
+[❌] Notification is still prototype
+[✅] User avatar dropdown is working properly 
 
 profile.php
 [✅] profile.php is completed. 
@@ -43,3 +50,9 @@ usermanagement.php
 [✅] Working properly.
 [❌] Make responsive to mobile.
 [❌] Pagination is shit.
+
+
+Remarks:
+Clean the code. 
+Remove unnecessary comments.
+Separate the php and javascript functionality to its own file.
