@@ -55,4 +55,4 @@ usermanagement.php
 Remarks:
 Clean the code. 
 Remove unnecessary comments.
-Separate the php and javascript functionality to its own file.
+Separate the php, javascript and css functionality to its own file.
