@@ -1,5 +1,14 @@
 <?php
-require_once 'session_init.php';
+include '../config.php';
+include 'session_init.php';
+include 'getUsersTotal.php';
+
+$sql = "SELECT COUNT(*) AS total FROM Users WHERE Role = 'student'";
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+
+$row = $stmt->fetch(PDO::FETCH_ASSOC);
+$totalStudents = $row ? $row['total'] : 0;
 ?>
 
 <!DOCTYPE html>
@@ -23,39 +32,41 @@ require_once 'session_init.php';
 
         <!-- Header -->
         <?php include 'header.php'; ?>
-
         <!-- Dashboard Content -->
         <div class="dashboard">
             <h2 class="dashboard-title">Welcome, <?php echo $firstName . ' ' . $lastName; ?>!</h2>
+
             <!-- Stats Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon students">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>1,245</h3>
-                        <p>Total Students</p>
-                    </div>
+                <div class="stat-icon students">
+                <i class="fas fa-user-graduate"></i>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon faculty">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>87</h3>
-                        <p>Faculty Members</p>
-                    </div>
+                <div class="stat-info">
+                <h3><?php echo $totalStudents; ?></h3>
+                <p>Total Students</p>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon courses">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>42</h3>
-                        <p>Registrar Members</p>
-                    </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon faculty">
+                <i class="fas fa-chalkboard-teacher"></i>
                 </div>
+                <div class="stat-info">
+                <h3><?php echo $totalFaculty; ?></h3>
+                <p>Total Faculty</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon courses">
+                <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-info">
+                <h3><?php echo $totalRegistrars; ?></h3>
+                <p>Total Registrars</p>
+                </div>
+            </div>
             </div>
 
             <!-- Dashboard Grid -->

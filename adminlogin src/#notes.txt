@@ -21,17 +21,17 @@ profile.php
 
 students.php
 [✅] students.php is displaying students.
-[❌] change the color of the buttons to 0a2342 | 153e6f.
+[✅] change the color of the buttons to 0a2342 | 153e6f.
 [❌] Make responsive to mobile.
 
 faculty.php
 [✅] faculty.php is displaying faculty.
-[❌] change the color of the buttons to 0a2342 | 153e6f.
+[✅] change the color of the buttons to 0a2342 | 153e6f.
 [❌] Make responsive to mobile.
 
 subjects.php 
 [❌] subjects.php is displaying courses database LMAO.
-[❌] change the color of the buttons to 0a2342 | 153e6f.
+[✅] change the color of the buttons to 0a2342 | 153e6f.
 [❌] Make responsive to mobile.
 
 grades.php
