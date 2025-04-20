@@ -38,6 +38,10 @@ function isActive($page, $currentPage) {
                 <i class="fas fa-user-graduate"></i>
                 <span class="menu-text">Students</span>
             </a>
+            <a href="programhead.php" class="menu-item <?php echo isActive('students', $currentPage); ?>">
+                <i class="fas fa-user-tie"></i>
+                <span class="menu-text">Program Head</span>
+            </a>
             <a href="faculty.php" class="menu-item <?php echo isActive('faculty', $currentPage); ?>">
                 <i class="fas fa-chalkboard-teacher"></i>
                 <span class="menu-text">Faculty</span>
@@ -45,10 +49,6 @@ function isActive($page, $currentPage) {
             <a href="subjects.php" class="menu-item <?php echo isActive('subjects', $currentPage); ?>">
                 <i class="fas fa-book"></i>
                 <span class="menu-text">Subjects</span>
-            </a>
-            <a href="grades.php" class="menu-item <?php echo isActive('grades', $currentPage); ?>">
-                <i class="fas fa-file-alt"></i>
-                <span class="menu-text">Grades</span>
             </a>
             <a href="calendar.php" class="menu-item <?php echo isActive('calendar', $currentPage); ?>">
                 <i class="fas fa-calendar"></i>
