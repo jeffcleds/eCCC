@@ -1,9 +1,15 @@
 <?php
+<<<<<<< HEAD
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 // Redirect if the user is not the expected role
+=======
+session_start();
+
+// Redirect if the user is not an the expected role
+>>>>>>> parent of f597af7 (Bugged Add Faculty Photo)
 if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../index.php");
     exit();
