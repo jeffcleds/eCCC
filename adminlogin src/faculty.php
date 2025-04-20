@@ -18,21 +18,7 @@ if (!in_array($_SESSION['role'], $allowedRoles)) {
 }
 
 // Database connection function
-function connectDB() {
-    $servername = "localhost";
-    $dbUsername = "root";
-    $dbPassword = "";
-    $dbname = "CCCDB";
-
-    $conn = new mysqli($servername, $dbUsername, $dbPassword, $dbname);
-
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    return $conn;
-}
+include '../config.php';
 
 // Initialize variables
 $successMessage = "";
