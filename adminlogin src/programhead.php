@@ -3,12 +3,7 @@ include '../config.php';
 include 'session_init.php';
 include 'getUsersTotal.php';
 
-$sql = "SELECT COUNT(*) AS total FROM Users WHERE Role = 'student'";
-$stmt = $conn->prepare($sql);
-$stmt->execute();
-
-$row = $stmt->fetch(PDO::FETCH_ASSOC);
-$totalStudents = $row ? $row['total'] : 0;
+$conn 
 ?>
 
 <!DOCTYPE html>

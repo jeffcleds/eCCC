@@ -841,6 +841,7 @@ $roles = getRoles();
                                 <option value="student">Student</option>
                                 <option value="faculty">Faculty</option>
                                 <option value="registrar">Registrar</option>
+                                <option value="program head">Program Head</option>
                                 <option value="admin">Admin</option>
                                 
                             </select>
@@ -903,6 +904,7 @@ $roles = getRoles();
                                 <option value="student">Student</option>
                                 <option value="faculty">Faculty</option>
                                 <option value="registrar">Registrar</option>
+                                <option value="program head">Program Head</option>
                                 <option value="admin">Admin</option>
                             </select>
                         </div>
