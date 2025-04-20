@@ -463,12 +463,12 @@ require_once 'session_init.php';
         }
 
         .btn-primary {
-            background-color: #0a2342;
+            background-color: #4361ee;
             color: white;
         }
 
         .btn-primary:hover {
-            background-color: #153e6f;
+            background-color: #3a56d4;
         }
 
         .btn-outline {
@@ -550,12 +550,12 @@ require_once 'session_init.php';
         }
 
         .edit-btn {
-            background-color: #0a2342;
+            background-color: #4361ee;
             color: white;
         }
 
         .edit-btn:hover {
-            background-color: #153e6f;
+            background-color: #3a56d4;
         }
 
         .delete-btn {

@@ -1,6 +1,26 @@
 <?php
 include 'session_init.php';
-include '../config.php';
+
+// Don't start a session here since session_init.php will handle it
+// Just check if we need to access session data before session_init.php is included
+
+
+// Database connection function
+function connectDB() {
+    $servername = "localhost";
+    $dbUsername = "root";
+    $dbPassword = "";
+    $dbname = "CCCDB";
+
+    $conn = new mysqli($servername, $dbUsername, $dbPassword, $dbname);
+
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    return $conn;
+}
 
 // Function to calculate age from birthday
 function calculateAge($birthdate) {

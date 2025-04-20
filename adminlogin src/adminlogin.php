@@ -28,7 +28,6 @@ include 'getUsersTotal.php';
         <!-- Dashboard Content -->
         <div class="dashboard">
             <h2 class="dashboard-title">Welcome, <?php echo $firstName . ' ' . $lastName; ?>!</h2>
-
             <!-- Stats Cards -->
             <div class="stats-grid">
                 <div class="stat-card">

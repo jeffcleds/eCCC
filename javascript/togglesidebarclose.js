@@ -12,7 +12,6 @@ if (!overlay) {
     document.body.appendChild(overlay);
 }
 
-
 if (toggleSidebarBtn && sidebar) {
     toggleSidebarBtn.addEventListener('click', function () {
         sidebar.classList.toggle('active');
