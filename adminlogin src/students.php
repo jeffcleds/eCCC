@@ -1,5 +1,20 @@
 <?php
-include 'session_init.php';
+if (!isset($_SESSION) && !headers_sent()) {
+    session_start();
+}
+
+// Check if user is logged in
+if (!isset($_SESSION['username'])) {
+    header("Location: index.php");
+    exit();
+}
+
+// Check if user has permission (admin or registrar)
+$allowedRoles = ['admin', 'registrar'];
+if (!in_array($_SESSION['role'], $allowedRoles)) {
+    header("Location: dashboard.php");
+    exit();
+}
 
 
 // Check if user has permission (admin, faculty, or registrar)

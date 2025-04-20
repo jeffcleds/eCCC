@@ -170,19 +170,27 @@ $totalStudents = $row ? $row['total'] : 0;
                             <h3 class="card-title">Quick Actions</h3>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <button style="padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
-                                <i class="fas fa-user-plus" style="margin-right: 5px;"></i> Add Student
-                            </button>
-                            <button style="padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
-                                <i class="fas fa-user-tie" style="margin-right: 5px;"></i> Add Faculty
-                            </button>
-                            <button style="padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
-                                <i class="fas fa-book-medical" style="margin-right: 5px;"></i> Add Course
-                            </button>
-                            <button style="padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
-                                <i class="fas fa-file-export" style="margin-right: 5px;"></i> Export Data
-                            </button>
-                        </div>
+    <a href="students.php" style="text-decoration: none; display: block;">
+        <button style="width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+            <i class="fas fa-user-plus" style="margin-right: 5px;"></i> Add Student
+        </button>
+    </a>
+    <a href="faculty.php" style="text-decoration: none; display: block;">
+        <button style="width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+            <i class="fas fa-user-tie" style="margin-right: 5px;"></i> Add Faculty
+        </button>
+    </a>
+    <a href="subjects.php" style="text-decoration: none; display: block;">
+        <button style="width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+            <i class="fas fa-book-medical" style="margin-right: 5px;"></i> Add Course
+        </button>
+    </a>
+    <a href="settings.php?tab=system" style="text-decoration: none; display: block;">
+        <button style="width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+            <i class="fas fa-file-export" style="margin-right: 5px;"></i> Export Data
+        </button>
+    </a>
+</div>
                     </div>
                 </div>
             </div>
