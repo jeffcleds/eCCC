@@ -34,17 +34,21 @@ function isActive($page, $currentPage) {
             </a>
             
             <p class="menu-category">Management</p>
-            <a href="students.php" class="menu-item <?php echo isActive('students', $currentPage); ?>">
-                <i class="fas fa-user-graduate"></i>
-                <span class="menu-text">Students</span>
-            </a>
-            <a href="programhead.php" class="menu-item <?php echo isActive('students', $currentPage); ?>">
+            <a href="programhead.php" class="menu-item <?php echo isActive('programhead', $currentPage); ?>">
                 <i class="fas fa-user-tie"></i>
                 <span class="menu-text">Program Head</span>
+            </a>
+            <a href="registrar.php" class="menu-item <?php echo isActive('registrar', $currentPage); ?>">
+                <i class="fas fa-user-edit"></i>
+                <span class="menu-text">Registrar</span>
             </a>
             <a href="faculty.php" class="menu-item <?php echo isActive('faculty', $currentPage); ?>">
                 <i class="fas fa-chalkboard-teacher"></i>
                 <span class="menu-text">Faculty</span>
+            </a>
+            <a href="students.php" class="menu-item <?php echo isActive('students', $currentPage); ?>">
+                <i class="fas fa-user-graduate"></i>
+                <span class="menu-text">Students</span>
             </a>
             <a href="subjects.php" class="menu-item <?php echo isActive('subjects', $currentPage); ?>">
                 <i class="fas fa-book"></i>
@@ -54,7 +58,6 @@ function isActive($page, $currentPage) {
                 <i class="fas fa-calendar"></i>
                 <span class="menu-text">Calendar</span>
             </a>
-            
             <p class="menu-category">System</p>
             <a href="settings.php" class="menu-item <?php echo isActive('settings', $currentPage); ?>">
                 <i class="fas fa-cog"></i>

@@ -10,7 +10,8 @@ $pageTitles = [
     'students.php' => 'Student Management',
     'faculty.php' => 'Faculty Management',
     'subjects.php' => 'Subjects Management',
-    'grades.php' => 'Grade Management',
+    'programhead.php' => 'Program Head Management',
+    'registrar.php' => 'Registrar Management',
     'calendar.php' => 'Academic Calendar'
 ];
 
