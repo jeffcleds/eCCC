@@ -24,6 +24,7 @@ include 'getUsersTotal.php';
 
         <!-- Header -->
         <?php include 'header.php'; ?>
+
         <!-- Dashboard Content -->
         <div class="dashboard">
             <h2 class="dashboard-title">Welcome, <?php echo $firstName . ' ' . $lastName; ?>!</h2>
@@ -31,38 +32,39 @@ include 'getUsersTotal.php';
             <!-- Stats Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
-                <div class="stat-icon students">
-                <i class="fas fa-user-graduate"></i>
+                    <div class="stat-icon students">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3><?php echo $totalStudents; ?></h3>
+                        <p>Total Students</p>
+                    </div>
                 </div>
-                <div class="stat-info">
-                <h3><?php echo $totalStudents; ?></h3>
-                <p>Total Students</p>
-                </div>
-            </div>
 
-            <div class="stat-card">
-                <div class="stat-icon faculty">
-                <i class="fas fa-chalkboard-teacher"></i>
+                <div class="stat-card">
+                    <div class="stat-icon faculty">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3><?php echo $totalFaculty; ?></h3>
+                        <p>Total Faculty</p>
+                    </div>
                 </div>
-                <div class="stat-info">
-                <h3><?php echo $totalFaculty; ?></h3>
-                <p>Total Faculty</p>
-                </div>
-            </div>
 
-            <div class="stat-card">
-                <div class="stat-icon courses">
-                <i class="fas fa-book"></i>
+                <div class="stat-card">
+                    <div class="stat-icon courses">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3><?php echo $totalRegistrars; ?></h3>
+                        <p>Total Registrars</p>
+                    </div>
                 </div>
-                <div class="stat-info">
-                <h3><?php echo $totalRegistrars; ?></h3>
-                <p>Total Registrars</p>
-                </div>
-            </div>
             </div>
 
             <!-- Dashboard Grid -->
             <div class="dashboard-grid">
+
                 <!-- Recent Activity -->
                 <div class="dashboard-card recent-activity">
                     <div class="card-header">
@@ -118,6 +120,7 @@ include 'getUsersTotal.php';
 
                 <!-- Right Column -->
                 <div>
+
                     <!-- Upcoming Events -->
                     <div class="dashboard-card upcoming-events">
                         <div class="card-header">
@@ -161,21 +164,30 @@ include 'getUsersTotal.php';
                         <div class="card-header">
                             <h3 class="card-title">Quick Actions</h3>
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <button style="padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
-                                <i class="fas fa-user-plus" style="margin-right: 5px;"></i> Add Student
-                            </button>
-                            <button style="padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
-                                <i class="fas fa-user-tie" style="margin-right: 5px;"></i> Add Faculty
-                            </button>
-                            <button style="padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
-                                <i class="fas fa-book-medical" style="margin-right: 5px;"></i> Add Course
-                            </button>
-                            <button style="padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
-                                <i class="fas fa-file-export" style="margin-right: 5px;"></i> Export Data
-                            </button>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                            <a href="students.php" style="text-decoration: none; display: block;">
+                                <button style="width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+                                    <i class="fas fa-user-plus" style="margin-right: 5px;"></i> Add Student
+                                </button>
+                            </a>
+                            <a href="faculty.php" style="text-decoration: none; display: block;">
+                                <button style="width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+                                    <i class="fas fa-user-tie" style="margin-right: 5px;"></i> Add Faculty
+                                </button>
+                            </a>
+                            <a href="subjects.php" style="text-decoration: none; display: block;">
+                                <button style="width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+                                    <i class="fas fa-book-medical" style="margin-right: 5px;"></i> Add Course
+                                </button>
+                            </a>
+                            <a href="settings.php?tab=system" style="text-decoration: none; display: block;">
+                                <button style="width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+                                    <i class="fas fa-file-export" style="margin-right: 5px;"></i> Export Data
+                                </button>
+                            </a>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>

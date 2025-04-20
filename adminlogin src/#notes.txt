@@ -7,7 +7,7 @@
  for admin role dashboard                                   
                                     
 adminlogin.php
-[❌] Dashboard is still not linked to database. 
+[✅] Dashboard is still not linked to database. 
 
 sidebar.php
 [❌] Error on the debug console but working properly.
