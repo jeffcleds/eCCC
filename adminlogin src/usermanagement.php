@@ -1,11 +1,19 @@
 <?php
 // Start session if not already started
-include 'session_init.php';
 
 
-// Check if user is logged in
+if (!isset($_SESSION) && !headers_sent()) {
+    require_once 'session_init.php';
+}
 if (!isset($_SESSION['username'])) {
     header("Location: index.php");
+    exit();
+}
+
+// Check if user has permission (admin or registrar)
+$allowedRoles = ['admin', 'registrar'];
+if (!in_array($_SESSION['role'], $allowedRoles)) {
+    header("Location: dashboard.php");
     exit();
 }
 
@@ -26,6 +34,7 @@ function connectDB() {
 
     return $conn;
 }
+
 
 
 // Initialize variables
