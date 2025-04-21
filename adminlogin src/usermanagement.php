@@ -1,10 +1,11 @@
 <?php
 // Start session if not already started
 
-
 if (!isset($_SESSION) && !headers_sent()) {
-    require_once 'session_init.php';
+    session_start();
 }
+
+// Check if user is logged in
 if (!isset($_SESSION['username'])) {
     header("Location: index.php");
     exit();
@@ -17,6 +18,13 @@ if (!in_array($_SESSION['role'], $allowedRoles)) {
     exit();
 }
 
+
+// Check if user has permission (admin, faculty, or registrar)
+$allowedRoles = ['admin', 'faculty', 'registrar'];
+if (!in_array($_SESSION['role'], $allowedRoles)) {
+    header("Location: dashboard.php");
+    exit();
+}
 
 // Database connection function
 function connectDB() {
@@ -34,8 +42,6 @@ function connectDB() {
 
     return $conn;
 }
-
-
 
 // Initialize variables
 $successMessage = "";
@@ -256,7 +262,7 @@ $totalPages = ceil($totalUsers / $perPage);
 // Get roles
 $roles = getRoles();
 
-
+require_once 'session_init.php';
 ?>
 
 <!DOCTYPE html>
