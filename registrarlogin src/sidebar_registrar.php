@@ -1,6 +1,4 @@
 <?php
-// Get current page name for active menu highlighting
-// At the very top of sidebar.php
 if(!isset($_SESSION)) {
     include 'session_init.php'; // or session_start();
 }
@@ -18,54 +16,39 @@ function isActive($page, $currentPage) {
 <aside class="sidebar">
     <div class="sidebar-header">
         <img src="../Assets/eCCC_Logo.png" alt="Calabanga Community College Logo" class="sidebar-logo">
-        <h1 class="sidebar-title"><?php echo $_SESSION['firstName'] . ' ' . $_SESSION['lastName']; ?></h1>
-                <p class="sidebar-role" style="color: white !important; font-size: 15px !important;"><?php echo ucfirst($_SESSION['role']); ?>
+        <h1 class="sidebar-title"><?php echo $_SESSION['firstname'] . ' ' . $_SESSION['lastname']; ?></h1>
+        <p class="sidebar-role" style="color: white !important; font-size: 15px !important;"><?php echo ucfirst($_SESSION['role']); ?>
 </p>
     </div>
     <div class="sidebar-body">
         <nav class="sidebar-menu">
             <p class="menu-category">Main</p>
-            <a href="adminlogin.php" class="menu-item <?php echo isActive('adminlogin', $currentPage); ?>">
+            <a href="registrarlogin.php" class="menu-item <?php echo isActive('registrarlogin', $currentPage); ?>">
                 <i class="fas fa-tachometer-alt"></i>
                 <span class="menu-text">Dashboard</span>
-                <a href="profile.php" class="menu-item <?php echo isActive('profile', $currentPage); ?>">
+                <a href="registrar_profile.php" class="menu-item <?php echo isActive('registrar_profile', $currentPage); ?>">
                 <i class="fa-solid fa-user"></i>
                 <span class="menu-text">Profile</span>
-                <a href="calendar.php" class="menu-item <?php echo isActive('calendar', $currentPage); ?>">
-                <i class="fas fa-calendar"></i>
-                <span class="menu-text">Calendar</span>
             </a>
             </a>
             
             <p class="menu-category">Management</p>
-            <a href="programhead.php" class="menu-item <?php echo isActive('programhead', $currentPage); ?>">
+            <a href="registrar_studentmanagement.php" class="menu-item <?php echo isActive('registrar_studentmanagement', $currentPage); ?>">
                 <i class="fas fa-user-tie"></i>
-                <span class="menu-text">Program Head</span>
+                <span class="menu-text">Student Management</span>
             </a>
-            <a href="registrar.php" class="menu-item <?php echo isActive('registrar', $currentPage); ?>">
-                <i class="fas fa-user-edit"></i>
-                <span class="menu-text">Registrar</span>
+            <a href="registrar_generategrades.php" class="menu-item <?php echo isActive('registrar_generategrades', $currentPage); ?>">
+                <i class="fa-solid fa-scroll"></i>
+                <span class="menu-text">Generate Grades</span>
             </a>
-            <a href="faculty.php" class="menu-item <?php echo isActive('faculty', $currentPage); ?>">
-                <i class="fas fa-chalkboard-teacher"></i>
-                <span class="menu-text">Faculty</span>
-            </a>
-            <a href="students.php" class="menu-item <?php echo isActive('students', $currentPage); ?>">
-                <i class="fas fa-user-graduate"></i>
-                <span class="menu-text">Students</span>
-            </a>
-            <a href="subjects.php" class="menu-item <?php echo isActive('subjects', $currentPage); ?>">
-                <i class="fas fa-book"></i>
-                <span class="menu-text">Subjects</span>
+            <a href="registrar_processdocuments.php" class="menu-item <?php echo isActive('registrar_processdocuments', $currentPage); ?>">
+                <i class="fa-solid fa-print"></i>
+                <span class="menu-text">Process Documents</span>
             </a>
             <p class="menu-category">System</p>
-            <a href="settings.php" class="menu-item <?php echo isActive('settings', $currentPage); ?>">
+            <a href="registrar_settings.php" class="menu-item <?php echo isActive('registrar_settings', $currentPage); ?>">
                 <i class="fas fa-cog"></i>
                 <span class="menu-text">Settings</span>
-            </a>
-            <a href="usermanagement.php" class="menu-item <?php echo isActive('usermanagement', $currentPage); ?>">
-                <i class="fas fa-users"></i>
-                <span class="menu-text">User Management</span>
             </a>
             <a href="../logout.php" class="menu-item">
                 <i class="fas fa-sign-out-alt"></i>

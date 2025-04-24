@@ -1,5 +1,5 @@
 <?php
-include 'config.php'; 
+include '../config.php'; 
 include 'session_init.php'; 
 
 
@@ -23,6 +23,8 @@ header("Expires: 0");
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="registrarloginstyles.css">
+    <link rel="stylesheet" href="sidebarstyles_registar.css">
+    <link rel="stylesheet" href="headerstyles_registrar.css">
 
 </head>
 <body>
@@ -35,5 +37,45 @@ header("Expires: 0");
         <!-- Header -->
         <?php include 'header_registrar.php'; ?>
         
+    <!-- Dashboard Content -->
+    <div class="dashboard">
+            <h2 class="dashboard-title">Welcome, <?php echo $firstName . ' ' . $lastName; ?>!</h2>
+
+            <!-- Stats Cards -->
+            <!--
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon students">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3><?php echo $totalStudents; ?></h3>
+                        <p>Total Students</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon faculty">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3><?php echo $totalFaculty; ?></h3>
+                        <p>Total Faculty</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon courses">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3><?php echo $totalRegistrars; ?></h3>
+                        <p>Total Registrars</p>
+                    </div>
+                </div>
+            </div>
+            -->
+
+
 </body>
 </html>

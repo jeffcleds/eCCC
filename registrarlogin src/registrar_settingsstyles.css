@@ -552,7 +552,7 @@ body {
 
 .rightsidepicrole{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333333a3 !important;
+    color: #333333a3;
     text-decoration: none;
     display: block;
     text-align: center;
@@ -710,59 +710,440 @@ text-decoration: none;
 text-decoration: underline;
 }
 
-/* Add these styles to your existing CSS */
+/* Add these responsive styles to your existing CSS */
 
-/* Sidebar Overlay */
-.sidebar-overlay {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(0, 0, 0, 0.5);
-z-index: 999; /* Below sidebar but above content */
-opacity: 0;
-visibility: hidden;
-transition: all 0.3s ease;
+/* Responsive Styles for Small Browser Windows */
+@media (max-width: 991px) {
+    /* Sidebar */
+    .sidebar {
+        position: fixed;
+        left: -280px;
+        transition: left 0.3s ease;
+        z-index: 1050;
+        height: 100vh;
+        overflow-y: auto;
+    }
+    
+    .sidebar.active {
+        left: 0;
+    }
+    
+    /* Main Content */
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    /* Header */
+    .header {
+        padding: 10px 15px;
+    }
+    
+    .header-title {
+        font-size: 18px;
+    }
+    
+    /* Settings Tabs */
+    .settings-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        flex-wrap: nowrap;
+        padding-bottom: 5px; /* For scrollbar */
+    }
+    
+    .settings-tab {
+        flex: 0 0 auto;
+    }
+    
+    /* Form Layout */
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .form-col {
+        padding: 0;
+        margin-bottom: 15px;
+    }
+    
+    /* Dropdowns */
+    .notification-dropdown {
+        width: 300px;
+        right: 10px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    .dropdown-content {
+        width: 250px;
+        right: 10px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    /* Settings Container */
+    .settings-container {
+        padding: 15px;
+    }
+    
+    .settings-section {
+        padding: 15px;
+    }
+    
+    /* Dashboard */
+    .dashboard {
+        padding: 0;
+    }
+    
+    /* Overlay for sidebar */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1040;
+    }
+    
+    .sidebar-overlay.active {
+        display: block;
+    }
 }
 
-.sidebar-overlay.active {
-opacity: 1;
-visibility: visible;
+/* Very Small Browser Windows */
+@media (max-width: 576px) {
+    .header-actions {
+        gap: 10px;
+    }
+    
+    .notification-btn {
+        padding: 8px;
+    }
+    
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .settings-title {
+        font-size: 20px;
+    }
+    
+    .settings-section-title {
+        font-size: 16px;
+    }
+    
+    /* Stack buttons in small viewports */
+    .form-group .btn + .btn {
+        margin-top: 10px;
+        margin-left: 0;
+    }
+    
+    /* Make color picker wrap */
+    .color-picker-container {
+        flex-wrap: wrap;
+    }
+    
+    /* Adjust toggle rows */
+    .toggle-row {
+        flex-wrap: wrap;
+    }
+    
+    /* Make dropdowns position better */
+    .notification-dropdown,
+    .dropdown-content {
+        width: calc(100vw - 20px);
+        right: 10px;
+        left: auto;
+    }
 }
 
-/* Improved Sidebar Toggle Behavior */
-@media (max-width: 768px) {
-.sidebar {
-transform: translateX(-100%);
-transition: transform 0.3s ease;
+.settings-container {
+    padding: 20px;
 }
 
-.sidebar.active {
-transform: translateX(0);
+.settings-header {
+    margin-bottom: 30px;
 }
 
-.main-content {
-margin-left: 0;
-transition: margin-left 0.3s ease;
+.settings-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 10px;
 }
 
-.toggle-sidebar {
-display: block;
-z-index: 1001; /* Above sidebar */
-}
-}
-
-/* Ensure proper stacking order */
-.sidebar {
-z-index: 1000;
+.settings-description {
+    color: #6c757d;
+    font-size: 14px;
 }
 
-.header {
-z-index: 990;
+.settings-tabs {
+    display: flex;
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 20px;
 }
 
-/* Prevent body scrolling when sidebar is open */
-body.sidebar-open {
-overflow: hidden;
+.settings-tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #495057;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s;
 }
+
+.settings-tab.active {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.settings-tab:hover:not(.active) {
+    color: #212529;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.settings-content {
+    display: none;
+}
+
+.settings-content.active {
+    display: block;
+}
+
+.settings-section {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.settings-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-color-rgb), 0.25);
+}
+
+.form-row {
+    display: flex;
+    margin-left: -10px;
+    margin-right: -10px;
+}
+
+.form-col {
+    flex: 1;
+    padding: 0 10px;
+}
+
+.btn {
+    display: inline-block;
+    font-weight: 500;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    padding: 10px 20px;
+    font-size: 14px;
+    line-height: 1.5;
+    border-radius: 4px;
+    transition: all 0.15s ease-in-out;
+    border: none;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #1b4f8f;
+
+}
+
+.btn-secondary {
+    color: #fff;
+    background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.toggle-label {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.alert {
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.color-picker-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.color-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.color-option.selected {
+    border-color: #333;
+}
+
+.avatar-upload {
+    position: relative;
+    max-width: 150px;
+    margin-bottom: 20px;
+}
+
+.avatar-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 10px;
+    border: 2px solid #eee;
+}
+
+.avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-edit {
+    position: absolute;
+    right: 5px;
+    bottom: 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.avatar-edit i {
+    color: white;
+    font-size: 14px;
+}
+
+.avatar-edit input {
+    display: none;
+}
+
+.password-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.form-text {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: var(--light-text);
+}
+

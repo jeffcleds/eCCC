@@ -3,16 +3,13 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
 
 // Define page titles
 $pageTitles = [
-    'adminlogin.php' => 'Dashboard',
-    'profile.php' => 'Profile',
-    'settings.php' => 'Settings',
-    'usermanagement.php' => 'User Management',
+    'registrarlogin.php' => 'Dashboard',
+    'registrar_profile.php' => 'Profile',
+    'registrar_studentsmanagement.php' => 'Student Management',
+    'registrar_generategrades.php' => 'Generate Grades',
     'students.php' => 'Student Management',
-    'faculty.php' => 'Faculty Management',
-    'subjects.php' => 'Subjects Management',
-    'programhead.php' => 'Program Head Management',
-    'registrar.php' => 'Registrar Management',
-    'calendar.php' => 'Academic Calendar'
+    'registrar_processdocuments.php' => 'Process Documents',
+    'registrar_settings.php' => 'Settings',
 ];
 
 // Get current page name and set title
