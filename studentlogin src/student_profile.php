@@ -225,17 +225,17 @@ require_once 'session_init.php';
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="registrarloginstyles.css">
-    <link rel="stylesheet" href="registrar_profilestyles.css">
+    <link rel="stylesheet" href="studentloginstyles.css">
+    <link rel="stylesheet" href="student_profilestyles.css">
         
 </head>
 <body>
     <!-- Sidebar -->
-    <?php include 'sidebar_registrar.php'; ?>
+    <?php include 'sidebar_student.php'; ?>
     
     <!-- Main Content -->
     <main class="main-content">
-        <?php include 'header_registrar.php'; ?>
+        <?php include 'header_student.php'; ?>
         
         <div class="profile-container">
             <div class="profile-header">
@@ -421,7 +421,6 @@ require_once 'session_init.php';
                     <!-- Account Settings Section -->
                     <div class="profile-section">
                         <div class="section-header">
-                        <h3 class="section-title">Account Information</h3>
                         </div>
                         
                         <!-- View Mode -->
@@ -434,7 +433,7 @@ require_once 'session_init.php';
                                 <div class="info-label">Password</div>
                                 <div class="info-value">
                                     ••••••••••
-                                    <a href="registrar_settings.php?tab=security" class="password-change-link" id="changePasswordBtn">
+                                    <a href="student_settings.php?tab=security" class="password-change-link" id="changePasswordBtn">
                                         <i class="fas fa-key"></i> Change Password
                                     </a>
                                 </div>

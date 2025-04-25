@@ -1,11 +1,9 @@
 <?php
 session_start();
 
-// Enable error reporting for debugging
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Database connection
 $servername = "localhost";
 $dbUsername = "root";
 $dbPassword = "";
@@ -13,17 +11,14 @@ $dbname = "CCCDB";
 
 $conn = new mysqli($servername, $dbUsername, $dbPassword, $dbname);
 
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle login
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $inputUsername = $_POST['Username'];
     $inputPassword = $_POST['Password'];
 
-    // Prepare query with PhoneNumber and AddressDetails included
     $stmt = $conn->prepare("SELECT FirstName, MiddleInitial, LastName, IDNumber, Birthday, AddressDetails, PhoneNumber, Gender, Email, Role, Photo FROM Users WHERE Username = ? AND Password = ?");
     $stmt->bind_param("ss", $inputUsername, $inputPassword);
     $stmt->execute();
@@ -61,6 +56,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         switch ($role) {
             case "admin":
                 header("Location: adminlogin src/adminlogin.php");
+                break;
+            case "program head":
+                header("Location: programhead src/programheadlogin.php");
                 break;
             case "faculty":
                 header("Location: facultylogin src/facultylogin.php");

@@ -5,6 +5,7 @@ include 'session_init.php';
 
 if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'student') {
     header("Location: ../index.php");
+    include '../logout.php';
     exit();
 }
 header("Cache-Control: no-cache, no-store, must-revalidate");
