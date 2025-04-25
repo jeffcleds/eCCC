@@ -63,6 +63,10 @@ function isActive($page, $currentPage) {
                 <i class="fas fa-cog"></i>
                 <span class="menu-text">Settings</span>
             </a>
+            <a href="viewsupporttickets.php" class="menu-item <?php echo isActive('viewsupporttickets', $currentPage); ?>">
+                <i class="fa-solid fa-ticket"></i>
+                <span class="menu-text">Support Tickets</span>
+            </a>
             <a href="usermanagement.php" class="menu-item <?php echo isActive('usermanagement', $currentPage); ?>">
                 <i class="fas fa-users"></i>
                 <span class="menu-text">User Management</span>
