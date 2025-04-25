@@ -65,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $phone = $conn->real_escape_string($_POST['phone']);
         $gender = $conn->real_escape_string($_POST['gender']);
         $username = $conn->real_escape_string($_POST['username']);
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password
+        $password = $_POST['password'];
         $role = 'student';
         
         // Get student information
@@ -156,7 +156,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $userStmt->bind_param("ssssssssssi", $idNumber, $firstName, $middleInitial, $lastName, $birthday, $email, $address, $phone, $gender, $username, $userId);
                 } else {
                     // Update with new password
-                    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                    $password = $_POST['password'];
                     $userStmt = $conn->prepare("UPDATE Users SET IDNumber = ?, FirstName = ?, MiddleInitial = ?, LastName = ?, Birthday = ?, Email = ?, AddressDetails = ?, PhoneNumber = ?, Gender = ?, Username = ?, Password = ? WHERE UserID = ?");
                     $userStmt->bind_param("sssssssssssi", $idNumber, $firstName, $middleInitial, $lastName, $birthday, $email, $address, $phone, $gender, $username, $password, $userId);
                 }

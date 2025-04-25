@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $phone = $conn->real_escape_string($_POST['phone']);
         $gender = $conn->real_escape_string($_POST['gender']);
         $username = $conn->real_escape_string($_POST['username']);
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password
+        $password = $_POST['password'];
         $role = 'faculty';
         
         // Handle photo upload
@@ -123,7 +123,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             } else {
                 // Update with new password
-                $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                $password = $_POST['password'];
                 if ($photoUpdated) {
                     // Update with new photo and password
                     $stmt = $conn->prepare("UPDATE Users SET IDNumber = ?, FirstName = ?, MiddleInitial = ?, LastName = ?, Birthday = ?, Email = ?, AddressDetails = ?, PhoneNumber = ?, Gender = ?, Photo = ?, Username = ?, Password = ? WHERE UserID = ?");
