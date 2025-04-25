@@ -3,14 +3,14 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
 
 // Define page titles
 $pageTitles = [
-    'programheadlogin.php' => 'Dashboard',
-    'programhead_profile.php' => 'Profile',
-    'programhead_mysubjects.php' => 'My Subjects',
-    'programhead_submitgrades.php' => 'Submit Grades',
-    'programhead_grades.php' => 'Grades',
-    'programhead_facultymanagement.php' => 'Faculty Management',
-    'programhead_curriculum.php' => 'Curriculum',
-    'programhead_settings.php' => 'Settings',
+    'studentlogin.php' => 'Dashboard',
+    'student_profile.php' => 'Profile',
+    'student_mysubjects.php' => 'My Subjects',
+    'student_submitgrades.php' => 'Submit Grades',
+    'student_grades.php' => 'Grades',
+    'student_facultymanagement.php' => 'Faculty Management',
+    'student_curriculum.php' => 'Curriculum',
+    'student_settings.php' => 'Settings',
 ];
 
 // Get current page name and set title
@@ -68,8 +68,8 @@ $currentTitle = $pageTitles[$currentPage] ?? 'Administration Panel';
             <div id="dropdown-menu" class="dropdown-content">
                 <b class="rightsidepicname"><?php echo $firstName . ' ' . $lastName; ?></b>
                 <p class="rightsidepicrole" style="color: grey !important; font-size: 12px !important;"><?php echo ucfirst($role); ?></p>
-                <a href="programhead_profile.php"><i class="fa-solid fa-user"></i> Profile</a>
-                <a href="programhead_settings.php"><i class="fas fa-cog"></i> Settings</a>
+                <a href="student_profile.php"><i class="fa-solid fa-user"></i> Profile</a>
+                <a href="student_settings.php"><i class="fas fa-cog"></i> Settings</a>
                 <a href="../logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
         </div>

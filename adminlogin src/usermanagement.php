@@ -735,7 +735,7 @@ require_once 'session_init.php';
                     <form class="search-form" method="get" action="usermanagement.php">
                         <input type="text" name="search" class="search-input" placeholder="Search users..." value="<?php echo htmlspecialchars($search); ?>">
                         <select name="role" class="filter-select">
-                            <option value="">All Roles</option>
+                            <option value=""selected>All Roles</option>
                             <?php foreach ($roles as $r): ?>
                                 <option value="<?php echo $r; ?>" <?php echo $role == $r ? 'selected' : ''; ?>><?php echo ucfirst($r); ?></option>
                             <?php endforeach; ?>

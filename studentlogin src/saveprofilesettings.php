@@ -31,7 +31,7 @@ $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
     $_SESSION['error'] = "User not found";
-    header("Location: faculty_settings.php");
+    header("Location: student_settings.php");
     exit();
 }
 
@@ -54,13 +54,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if (!in_array($_FILES['profile_picture']['type'], $allowed_types)) {
             $_SESSION['error'] = "Only JPG, PNG, and GIF files are allowed";
-            header("Location: faculty_settings.php");
+            header("Location: student_settings.php");
             exit();
         }
 
         if ($_FILES['profile_picture']['size'] > $max_size) {
             $_SESSION['error'] = "File size must be less than 10MB";
-            header("Location: faculty_settings.php");
+            header("Location: student_settings.php");
             exit();
         }
 
@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             $_SESSION['error'] = "SQL error: " . $conn->error;
-            header("Location: faculty_settings.php");
+            header("Location: student_settings.php");
             exit();
         }
 
@@ -93,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             $_SESSION['error'] = "SQL error: " . $conn->error;
-            header("Location: faculty_settings.php");
+            header("Location: student_settings.php");
             exit();
         }
 
@@ -115,7 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $stmt->close();
-    header("Location: faculty_settings.php");
+    header("Location: student_settings.php");
     exit();
 }
 

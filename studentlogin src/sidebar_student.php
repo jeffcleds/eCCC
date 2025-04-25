@@ -31,20 +31,20 @@ function isActive($page, $currentPage) {
             </a>
             <p class="menu-category">Student</p>
             <a href="student_mysubjects.php" class="menu-item <?php echo isActive('student_mysubjects', $currentPage); ?>">
-                <i class="fas fa-user-tie"></i>
+                <i class="fa-solid fa-book-open"></i>
                 <span class="menu-text">My Subjects</span>
             </a>
             <a href="student_academicprogress.php" class="menu-item <?php echo isActive('student_academicprogress', $currentPage); ?>">
-                <i class="fa-solid fa-scroll"></i>
+                <i class="fa-solid fa-graduation-cap"></i>
                 <span class="menu-text">Academic Progress</span>
             </a>
             <p class="menu-category">Documents</p>
             <a href="student_requestdocuments.php" class="menu-item <?php echo isActive('student_requestdocuments', $currentPage); ?>">
-                <i class="fa-solid fa-users"></i>
+                <i class="fa-solid fa-file-invoice"></i>
                 <span class="menu-text">Request Document</span>
             </a>
             <a href="student_trackstatus.php" class="menu-item <?php echo isActive('student_trackstatus', $currentPage); ?>">
-                <i class="fa-solid fa-book"></i>
+                <i class="fa-solid fa-ticket"></i>
                 <span class="menu-text">Track Status</span>
             </a>
             <p class="menu-category">System</p>
