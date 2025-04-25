@@ -6,10 +6,10 @@ $pageTitles = [
     'studentlogin.php' => 'Dashboard',
     'student_profile.php' => 'Profile',
     'student_mysubjects.php' => 'My Subjects',
-    'student_submitgrades.php' => 'Submit Grades',
-    'student_grades.php' => 'Grades',
+    'student_academicprogress.php' => 'Academic Progress',
+    'student_requestdocuments.php' => 'Request Documents',
     'student_facultymanagement.php' => 'Faculty Management',
-    'student_curriculum.php' => 'Curriculum',
+    'student_trackstatus.php' => 'Track Status',
     'student_settings.php' => 'Settings',
 ];
 
