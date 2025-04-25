@@ -117,10 +117,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->bind_param("sssssssi", $idNumber, $firstName, $middleInitial, $lastName, $email, $username, $role, $userId);
             } else {
                 // Update user with new password
-                $conn->real_escape_string($_POST['passwords']);
-                $stmt = $conn->prepare("UPDATE Users SET IDNumber = ?, FirstName = ?, MiddleInitial = ?, LastName = ?, Email = ?, Username = ?, Password = ?, Role = ? WHERE UserID = ?");
-                $stmt->bind_param("sssssssssi", $idNumber, $firstName, $middleInitial, $lastName, $email, $username, $password, $role, $userId);
-            }
+                    // Update user with new password
+                    $password = $conn->real_escape_string($_POST['password']);
+                    $stmt = $conn->prepare("UPDATE Users SET IDNumber = ?, FirstName = ?, MiddleInitial = ?, LastName = ?, Email = ?, Username = ?, Password = ?, Role = ? WHERE UserID = ?");
+                    $stmt->bind_param("ssssssssi", $idNumber, $firstName, $middleInitial, $lastName, $email, $username, $password, $role, $userId);
+                }
+            
             
             if ($stmt->execute()) {
                 $successMessage = "User updated successfully!";
