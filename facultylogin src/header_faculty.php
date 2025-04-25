@@ -66,8 +66,8 @@ $currentTitle = $pageTitles[$currentPage] ?? 'Administration Panel';
             <div id="dropdown-menu" class="dropdown-content">
                 <b class="rightsidepicname"><?php echo $firstName . ' ' . $lastName; ?></b>
                 <p class="rightsidepicrole" style="color: grey !important; font-size: 12px !important;"><?php echo ucfirst($role); ?></p>
-                <a href="profile.php"><i class="fa-solid fa-user"></i> Profile</a>
-                <a href="settings.php"><i class="fas fa-cog"></i> Settings</a>
+                <a href="faculty_profile.php"><i class="fa-solid fa-user"></i> Profile</a>
+                <a href="faculty_settings.php"><i class="fas fa-cog"></i> Settings</a>
                 <a href="../logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
         </div>

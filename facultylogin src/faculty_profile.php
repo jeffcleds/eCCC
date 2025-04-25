@@ -433,7 +433,7 @@ require_once 'session_init.php';
                                 <div class="info-label">Password</div>
                                 <div class="info-value">
                                     ••••••••••
-                                    <a href="registrar_settings.php?tab=security" class="password-change-link" id="changePasswordBtn">
+                                    <a href="faculty_settings.php?tab=security" class="password-change-link" id="changePasswordBtn">
                                         <i class="fas fa-key"></i> Change Password
                                     </a>
                                 </div>

@@ -22,28 +22,28 @@ function isActive($page, $currentPage) {
     <div class="sidebar-body">
         <nav class="sidebar-menu">
             <p class="menu-category">Main</p>
-            <a href="facultylogin.php" class="menu-item <?php echo isActive('registrarlogin', $currentPage); ?>">
+            <a href="facultylogin.php" class="menu-item <?php echo isActive('facultylogin', $currentPage); ?>">
                 <i class="fas fa-tachometer-alt"></i>
                 <span class="menu-text">Dashboard</span>
-                <a href="faculty_profile.php" class="menu-item <?php echo isActive('registrar_profile', $currentPage); ?>">
+                <a href="faculty_profile.php" class="menu-item <?php echo isActive('faculty_profile', $currentPage); ?>">
                 <i class="fa-solid fa-user"></i>
                 <span class="menu-text">Profile</span>
             </a>
             <p class="menu-category">Management</p>
-            <a href="faculty_mysubjects.php" class="menu-item <?php echo isActive('registrar_studentmanagement', $currentPage); ?>">
+            <a href="faculty_mysubjects.php" class="menu-item <?php echo isActive('faculty_mysubjects', $currentPage); ?>">
                 <i class="fas fa-user-tie"></i>
                 <span class="menu-text">My Subjects</span>
             </a>
-            <a href="faculty_submitgrades.php" class="menu-item <?php echo isActive('registrar_generategrades', $currentPage); ?>">
+            <a href="faculty_submitgrades.php" class="menu-item <?php echo isActive('faculty_submitgrades', $currentPage); ?>">
                 <i class="fa-solid fa-scroll"></i>
                 <span class="menu-text">Submit Grades</span>
             </a>
-            <a href="faculty_grades.php" class="menu-item <?php echo isActive('registrar_processdocuments', $currentPage); ?>">
+            <a href="faculty_grades.php" class="menu-item <?php echo isActive('faculty_grades', $currentPage); ?>">
                 <i class="fa-solid fa-print"></i>
                 <span class="menu-text">Grades</span>
             </a>
             <p class="menu-category">System</p>
-            <a href="faculty_settings.php" class="menu-item <?php echo isActive('registrar_settings', $currentPage); ?>">
+            <a href="faculty_settings.php" class="menu-item <?php echo isActive('faculty_settings', $currentPage); ?>">
                 <i class="fas fa-cog"></i>
                 <span class="menu-text">Settings</span>
             </a>
