@@ -287,6 +287,11 @@
             color: var(--secondary-color);
         }
 
+        .stat-icon.program-head{
+            background-color: rgba(144, 23, 53, 0.1);
+            color: var(--danger-color);
+        }
+
         .stat-icon.revenue {
             background-color: rgba(230, 57, 70, 0.1);
             color: var(--danger-color);

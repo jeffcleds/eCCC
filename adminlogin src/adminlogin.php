@@ -60,6 +60,16 @@ include 'getUsersTotal.php';
                         <p>Total Registrars</p>
                     </div>
                 </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon program-head">
+                    <i class="fa-solid fa-user-tie"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3><?php echo $totalProgramHead; ?></h3>
+                        <p>Total Program Head</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Dashboard Grid -->

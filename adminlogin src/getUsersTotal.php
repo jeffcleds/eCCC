@@ -15,9 +15,10 @@ try {
     $totalStudents = getCountByRole($conn, 'student');
     $totalFaculty = getCountByRole($conn, 'faculty');
     $totalRegistrars = getCountByRole($conn, 'registrar');
+    $totalProgramHead = getCountByRole($conn, 'program head');
 
 } catch (PDOException $e) {
     echo "Connection failed: " . $e->getMessage();
-    $totalStudents = $totalFaculty = $totalRegistrars = 0;
+    $totalStudents = $totalFaculty = $totalRegistrars = $totalProgramHead = 0;
 }
 ?>
