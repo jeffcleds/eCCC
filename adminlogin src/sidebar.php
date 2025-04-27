@@ -19,8 +19,7 @@ function isActive($page, $currentPage) {
     <div class="sidebar-header">
         <img src="../Assets/eCCC_Logo.png" alt="Calabanga Community College Logo" class="sidebar-logo">
         <h1 class="sidebar-title"><?php echo $firstName . ' ' . $lastName; ?></h1>
-        <p class="sidebar-role" style="color: white !important; font-size: 15px !important;">
-    <?php echo ucfirst($_SESSION['role']); ?>
+        <p class="sidebar-role" style="color: white !important; font-size: 15px !important;"><?php echo ucfirst($_SESSION['role']); ?>
 </p>
     </div>
     <div class="sidebar-body">
@@ -32,34 +31,41 @@ function isActive($page, $currentPage) {
                 <a href="profile.php" class="menu-item <?php echo isActive('profile', $currentPage); ?>">
                 <i class="fa-solid fa-user"></i>
                 <span class="menu-text">Profile</span>
+                <a href="calendar.php" class="menu-item <?php echo isActive('calendar', $currentPage); ?>">
+                <i class="fas fa-calendar"></i>
+                <span class="menu-text">Calendar</span>
+            </a>
             </a>
             
             <p class="menu-category">Management</p>
-            <a href="students.php" class="menu-item <?php echo isActive('students', $currentPage); ?>">
-                <i class="fas fa-user-graduate"></i>
-                <span class="menu-text">Students</span>
+            <a href="programhead.php" class="menu-item <?php echo isActive('programhead', $currentPage); ?>">
+                <i class="fas fa-user-tie"></i>
+                <span class="menu-text">Program Head</span>
+            </a>
+            <a href="registrar.php" class="menu-item <?php echo isActive('registrar', $currentPage); ?>">
+                <i class="fas fa-user-edit"></i>
+                <span class="menu-text">Registrar</span>
             </a>
             <a href="faculty.php" class="menu-item <?php echo isActive('faculty', $currentPage); ?>">
                 <i class="fas fa-chalkboard-teacher"></i>
                 <span class="menu-text">Faculty</span>
             </a>
-            <a href="courses.php" class="menu-item <?php echo isActive('courses', $currentPage); ?>">
+            <a href="students.php" class="menu-item <?php echo isActive('students', $currentPage); ?>">
+                <i class="fas fa-user-graduate"></i>
+                <span class="menu-text">Students</span>
+            </a>
+            <a href="subjects.php" class="menu-item <?php echo isActive('subjects', $currentPage); ?>">
                 <i class="fas fa-book"></i>
-                <span class="menu-text">Courses</span>
+                <span class="menu-text">Subjects</span>
             </a>
-            <a href="grades.php" class="menu-item <?php echo isActive('grades', $currentPage); ?>">
-                <i class="fas fa-file-alt"></i>
-                <span class="menu-text">Grades</span>
-            </a>
-            <a href="calendar.php" class="menu-item <?php echo isActive('calendar', $currentPage); ?>">
-                <i class="fas fa-calendar"></i>
-                <span class="menu-text">Calendar</span>
-            </a>
-            
             <p class="menu-category">System</p>
             <a href="settings.php" class="menu-item <?php echo isActive('settings', $currentPage); ?>">
                 <i class="fas fa-cog"></i>
                 <span class="menu-text">Settings</span>
+            </a>
+            <a href="viewsupporttickets.php" class="menu-item <?php echo isActive('viewsupporttickets', $currentPage); ?>">
+                <i class="fa-solid fa-ticket"></i>
+                <span class="menu-text">Support Tickets</span>
             </a>
             <a href="usermanagement.php" class="menu-item <?php echo isActive('usermanagement', $currentPage); ?>">
                 <i class="fas fa-users"></i>

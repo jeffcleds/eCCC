@@ -287,6 +287,11 @@
             color: var(--secondary-color);
         }
 
+        .stat-icon.program-head{
+            background-color: rgba(144, 23, 53, 0.1);
+            color: var(--danger-color);
+        }
+
         .stat-icon.revenue {
             background-color: rgba(230, 57, 70, 0.1);
             color: var(--danger-color);
@@ -552,7 +557,7 @@
 
         .rightsidepicrole{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333333a3;
+            color: #333333a3 !important;
             text-decoration: none;
             display: block;
             text-align: center;
