@@ -2,6 +2,9 @@
 // Start session if not already started
 include 'session_init.php';
 
+// Global database connection
+$GLOBALS['db_connection'] = null;
+
 // Database connection function
 function connectDB() {
     $servername = "localhost";
@@ -11,12 +14,19 @@ function connectDB() {
 
     $conn = new mysqli($servername, $dbUsername, $dbPassword, $dbname);
 
-    // Check connection
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
 
     return $conn;
+}
+
+// Function to close database connection
+function closeDB() {
+    $conn = connectDB();
+    if ($conn) {
+        $conn->close();
+    }
 }
 
 // Initialize variables
@@ -62,143 +72,182 @@ if ($nextMonth > 12) {
 }
 
 // Handle event operations (add, edit, delete)
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $conn = connectDB();
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_event'])) {
+    $conn = null;
+    $success = false;
+    $error = '';
     
-    // Add new event
-    if (isset($_POST['add_event'])) {
-        $title = $conn->real_escape_string($_POST['title']);
-        $description = $conn->real_escape_string($_POST['description']);
-        $startDate = $conn->real_escape_string($_POST['start_date']);
-        $startTime = $conn->real_escape_string($_POST['start_time']);
-        $endDate = $conn->real_escape_string($_POST['end_date']);
-        $endTime = $conn->real_escape_string($_POST['end_time']);
-        $location = $conn->real_escape_string($_POST['location']);
-        $eventType = $conn->real_escape_string($_POST['event_type']);
-        $color = $conn->real_escape_string($_POST['color']);
-        $isAllDay = isset($_POST['is_all_day']) ? 1 : 0;
+    try {
+        // Debug: Print all POST data
+        error_log("=== START EVENT ADDITION DEBUG ===");
+        error_log("POST Data: " . print_r($_POST, true));
+        error_log("Session Data: " . print_r($_SESSION, true));
         
-        $startDateTime = $startDate . ' ' . ($isAllDay ? '00:00:00' : $startTime . ':00');
-        $endDateTime = $endDate . ' ' . ($isAllDay ? '23:59:59' : $endTime . ':00');
+        $conn = connectDB();
+        error_log("Database connection established");
         
-        $stmt = $conn->prepare("INSERT INTO Events (Title, Description, StartDate, EndDate, Location, EventType, Color, IsAllDay, CreatedBy) VALUES (?, ?, ?,?,?,?,?,?,?)");       
-        $stmt->close();
-    }
-    
-    // Edit event
-    if (isset($_POST['edit_event'])) {
-        $eventId = intval($_POST['event_id']);
-        $title = $conn->real_escape_string($_POST['title']);
-        $description = $conn->real_escape_string($_POST['description']);
-        $startDate = $conn->real_escape_string($_POST['start_date']);
-        $startTime = $conn->real_escape_string($_POST['start_time']);
-        $endDate = $conn->real_escape_string($_POST['end_date']);
-        $endTime = $conn->real_escape_string($_POST['end_time']);
-        $location = $conn->real_escape_string($_POST['location']);
-        $eventType = $conn->real_escape_string($_POST['event_type']);
-        $color = $conn->real_escape_string($_POST['color']);
-        $isAllDay = isset($_POST['is_all_day']) ? 1 : 0;
-        
-        $startDateTime = $startDate . ' ' . ($isAllDay ? '00:00:00' : $startTime . ':00');
-        $endDateTime = $endDate . ' ' . ($isAllDay ? '23:59:59' : $endTime . ':00');
-        
-        // Check if user has permission to edit this event
-        $canEdit = false;
-        if ($isAdmin) {
-            $canEdit = true;
-        } else {
-            $checkStmt = $conn->prepare("SELECT CreatedBy FROM Events WHERE EventID = ?");
-            $checkStmt->bind_param("i", $eventId);
-            $checkStmt->execute();
-            $checkStmt->bind_result($createdBy);
-            $checkStmt->fetch();
-            $checkStmt->close();
-            
-            if ($createdBy == $userId) {
-                $canEdit = true;
-            }
+        // Validate required fields
+        if (empty($_POST['title'])) {
+            throw new Exception("Event title is required");
+        }
+        if (empty($_POST['start_date'])) {
+            throw new Exception("Start date is required");
+        }
+        if (empty($_POST['end_date'])) {
+            throw new Exception("End date is required");
         }
         
-        if ($canEdit) {
-            $stmt = $conn->prepare("UPDATE Events SET Title = ?, Description = ?, StartDate = ?, EndDate = ?, Location = ?, EventType = ?, Color = ?, IsAllDay = ? WHERE EventID = ?");
-            $stmt->bind_param("sssssssii", $title, $description, $startDateTime, $endDateTime, $location, $eventType, $color, $isAllDay, $eventId);
+        $title = $conn->real_escape_string($_POST['title']);
+        $description = $conn->real_escape_string($_POST['description'] ?? '');
+        $startDate = $conn->real_escape_string($_POST['start_date']);
+        $endDate = $conn->real_escape_string($_POST['end_date']);
+        $location = $conn->real_escape_string($_POST['location'] ?? '');
+        $eventType = $conn->real_escape_string($_POST['event_type'] ?? 'Meeting');
+        $color = $conn->real_escape_string($_POST['color'] ?? '#4361ee');
+        $isAllDay = isset($_POST['is_all_day']) ? 1 : 0;
+        
+        // Handle time fields
+        if ($isAllDay) {
+            $startTime = '00:00:00';
+            $endTime = '23:59:59';
+        } else {
+            $startTime = isset($_POST['start_time']) ? $_POST['start_time'] . ':00' : '00:00:00';
+            $endTime = isset($_POST['end_time']) ? $_POST['end_time'] . ':00' : '00:00:00';
+        }
+        
+        $startDateTime = $startDate . ' ' . $startTime;
+        $endDateTime = $endDate . ' ' . $endTime;
+        
+        // Debug: Print all processed values
+        error_log("Processed Values:");
+        error_log("Title: " . $title);
+        error_log("Description: " . $description);
+        error_log("Start DateTime: " . $startDateTime);
+        error_log("End DateTime: " . $endDateTime);
+        error_log("Location: " . $location);
+        error_log("Event Type: " . $eventType);
+        error_log("Color: " . $color);
+        error_log("Is All Day: " . $isAllDay);
+        
+        // Get the current user's ID from session
+        $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0;
+        error_log("User ID from session: " . $userId);
+        
+        // Check if user exists
+        $checkUser = $conn->prepare("SELECT UserID FROM Users WHERE UserID = ?");
+        if (!$checkUser) {
+            throw new Exception("User check prepare failed: " . $conn->error);
+        }
+        
+        $checkUser->bind_param("i", $userId);
+        $checkUser->execute();
+        $checkUser->store_result();
+        
+        error_log("User check result: " . $checkUser->num_rows . " rows found");
+        
+        if ($checkUser->num_rows > 0) {
+            // Debug: Print the SQL query
+            $sql = "INSERT INTO Events (Title, Description, StartDate, EndDate, Location, EventType, Color, IsAllDay, CreatedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            error_log("SQL Query: " . $sql);
+            error_log("SQL Parameters: " . print_r([$title, $description, $startDateTime, $endDateTime, $location, $eventType, $color, $isAllDay, $userId], true));
+            
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                throw new Exception("Event insert prepare failed: " . $conn->error);
+            }
+            
+            $stmt->bind_param("sssssssii", $title, $description, $startDateTime, $endDateTime, $location, $eventType, $color, $isAllDay, $userId);
             
             if ($stmt->execute()) {
-                $successMessage = "Event updated successfully!";
+                $success = true;
+                $successMessage = "Event added successfully!";
+                error_log("Event added successfully");
+                error_log("Last Insert ID: " . $conn->insert_id);
             } else {
-                $errorMessage = "Error updating event: " . $conn->error;
+                $error = "Error adding event: " . $stmt->error;
+                error_log("Error adding event: " . $stmt->error);
             }
             
             $stmt->close();
         } else {
-            $errorMessage = "You don't have permission to edit this event.";
-        }
-    }
-    
-    // Delete event
-    if (isset($_POST['delete_event'])) {
-        $eventId = intval($_POST['event_id']);
-        
-        // Check if user has permission to delete this event
-        $canDelete = false;
-        if ($isAdmin) {
-            $canDelete = true;
-        } else {
-            $checkStmt = $conn->prepare("SELECT CreatedBy FROM Events WHERE EventID = ?");
-            $checkStmt->bind_param("i", $eventId);
-            $checkStmt->execute();
-            $checkStmt->bind_result($createdBy);
-            $checkStmt->fetch();
-            $checkStmt->close();
-            
-            if ($createdBy == $userId) {
-                $canDelete = true;
-            }
+            $error = "Error: Invalid user ID. Please log in again.";
+            error_log("Invalid user ID: " . $userId);
         }
         
-        if ($canDelete) {
-            $stmt = $conn->prepare("DELETE FROM Events WHERE EventID = ?");
-            $stmt->bind_param("i", $eventId);
-            
-            if ($stmt->execute()) {
-                $successMessage = "Event deleted successfully!";
-            } else {
-                $errorMessage = "Error deleting event: " . $conn->error;
-            }
-            
-            $stmt->close();
-        } else {
-            $errorMessage = "You don't have permission to delete this event.";
-        }
-    }
-    
+        $checkUser->close();
+    } catch (Exception $e) {
+        $error = "Error: " . $e->getMessage();
+        error_log("Exception: " . $e->getMessage());
+    } finally {
+        if ($conn) {
     $conn->close();
+            error_log("Database connection closed");
+        }
+    }
+    
+    error_log("=== END EVENT ADDITION DEBUG ===");
+    
+    if ($success) {
+        // Redirect only after all database operations are complete
+        header("Location: calendar.php?year=" . $year . "&month=" . $month);
+        exit();
+    } else {
+        $errorMessage = $error;
+    }
 }
 
 // Get events for the current month
 function getMonthEvents($year, $month, $eventType = '') {
-    $conn = connectDB();
     $events = [];
+    $conn = null;
+    
+    try {
+        $conn = connectDB();
     
     // Calculate start and end dates for the month
     $startDate = sprintf("%04d-%02d-01 00:00:00", $year, $month);
     $endDate = sprintf("%04d-%02d-%02d 23:59:59", $year, $month, date('t', mktime(0, 0, 0, $month, 1, $year)));
     
     // Build the query
-    $query = "SELECT * FROM Events WHERE StartDate <= ? AND EndDate >= ? ";
-    $params = [$endDate, $startDate];
-    $types = "ss";
-    
-    if (!empty($eventType)) {
-        $query .= "AND EventType = ? ";
-        $params[] = $eventType;
-        $types .= "s";
+        $query = "SELECT * FROM Events WHERE 
+            (StartDate BETWEEN ? AND ?) OR 
+            (EndDate BETWEEN ? AND ?) OR 
+            (StartDate <= ? AND EndDate >= ?)";
+        
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("ssssss", $startDate, $endDate, $startDate, $endDate, $startDate, $endDate);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        while ($row = $result->fetch_assoc()) {
+            $events[] = $row;
+        }
+        
+        $stmt->close();
+    } catch (Exception $e) {
+        error_log("Error getting month events: " . $e->getMessage());
+    } finally {
+        if ($conn) {
+            $conn->close();
+        }
     }
     
-    $query .= "ORDER BY StartDate";
+    return $events;
+}
+
+// Get upcoming events
+function getUpcomingEvents($limit = 5) {
+    $events = [];
+    $conn = null;
+    
+    try {
+        $conn = connectDB();
+        
+        $currentDateTime = date('Y-m-d H:i:s');
+        $query = "SELECT * FROM Events WHERE EndDate >= ? ORDER BY StartDate LIMIT ?";
     
     $stmt = $conn->prepare($query);
-    $stmt->bind_param($types, ...$params);
+        $stmt->bind_param("si", $currentDateTime, $limit);
     $stmt->execute();
     $result = $stmt->get_result();
     
@@ -207,15 +256,24 @@ function getMonthEvents($year, $month, $eventType = '') {
     }
     
     $stmt->close();
+    } catch (Exception $e) {
+        error_log("Error getting upcoming events: " . $e->getMessage());
+    } finally {
+        if ($conn) {
     $conn->close();
+        }
+    }
     
     return $events;
 }
 
 // Get event types
 function getEventTypes() {
-    $conn = connectDB();
     $types = [];
+    $conn = null;
+    
+    try {
+        $conn = connectDB();
     
     $stmt = $conn->prepare("SELECT DISTINCT EventType FROM Events ORDER BY EventType");
     $stmt->execute();
@@ -226,7 +284,13 @@ function getEventTypes() {
     }
     
     $stmt->close();
+    } catch (Exception $e) {
+        error_log("Error getting event types: " . $e->getMessage());
+    } finally {
+        if ($conn) {
     $conn->close();
+        }
+    }
     
     return $types;
 }
@@ -234,11 +298,11 @@ function getEventTypes() {
 // Get events for a specific date
 function getDateEvents($date, $events) {
     $dateEvents = [];
+    $checkDate = new DateTime($date);
     
     foreach ($events as $event) {
         $startDate = new DateTime($event['StartDate']);
         $endDate = new DateTime($event['EndDate']);
-        $checkDate = new DateTime($date);
         
         // Check if the event occurs on this date
         if ($checkDate >= $startDate && $checkDate <= $endDate) {
@@ -252,9 +316,11 @@ function getDateEvents($date, $events) {
 // Get month events
 $monthEvents = getMonthEvents($year, $month, $eventType);
 
+// Get upcoming events
+$upcomingEvents = getUpcomingEvents();
+
 // Get event types for filter
 $eventTypes = getEventTypes();
-
 
 ?>
 
@@ -270,269 +336,207 @@ $eventTypes = getEventTypes();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="adminloginstyles.css">
     <style>
-        /* Calendar Page Specific Styles */
         .calendar-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
             padding: 20px;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
+        .calendar-main {
+            background: var(--bg-white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
         .calendar-header {
-            margin-bottom: 30px;
-        }
-
-        .calendar-header h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .calendar-header p {
-            color: #666;
-            font-size: 0.95rem;
-        }
-
-        .alert {
-            padding: 12px 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            font-size: 0.9rem;
-        }
-
-        .alert-success {
-            background-color: #e6f7ed;
-            color: #0d8a53;
-            border: 1px solid #0d8a53;
-        }
-
-        .alert-danger {
-            background-color: #feeae9;
-            color: #d63d62;
-            border: 1px solid #d63d62;
-        }
-
-        .calendar-actions {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
 
-        .calendar-nav {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        .calendar-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
         }
 
-        .month-nav {
+        .calendar-nav {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .month-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #333;
-            min-width: 180px;
-            text-align: center;
-        }
-
         .nav-btn {
-            width: 36px;
-            height: 36px;
+            background: var(--bg-light);
+            border: none;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f1f3f9;
-            color: #333;
             cursor: pointer;
+            color: var(--primary-color);
             transition: all 0.3s ease;
         }
 
         .nav-btn:hover {
-            background-color: #e2e6f0;
-        }
-
-        .filter-container {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .filter-select {
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.9rem;
-            background-color: white;
-        }
-
-        .filter-select:focus {
-            outline: none;
-            border-color: #4361ee;
-            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.1);
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background-color: #4361ee;
+            background: var(--primary-color);
             color: white;
         }
 
-        .btn-primary:hover {
-            background-color: #3a56d4;
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid #ddd;
-            color: #666;
-        }
-
-        .btn-outline:hover {
-            background-color: #f8f9fa;
-        }
-
-        .btn-icon {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
         .calendar-grid {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 9px;
-            margin-bottom: 10px;
-        }
-
-        .weekday {
-            text-align: center;
-            font-weight: 600;
-            color: #333;
-            padding: 10px;
-        }
-
-        .days {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 10px;
         }
 
-        .day {
-            width: 150px;
-            min-height: 120px;
-            border: 1px solid #eee;
-            border-radius: 5px;
+        .weekday {
+            text-align: center;
+            font-weight: 500;
+            color: var(--light-text);
             padding: 10px;
-            position: relative;
+            font-size: 0.9rem;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            background: var(--bg-light);
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         .day:hover {
-            background-color: #f9f9f9;
+            background: var(--bg-white);
+            box-shadow: var(--shadow);
+        }
+
+        .day.today {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .day.other-month {
+            opacity: 0.5;
         }
 
         .day-number {
             font-weight: 500;
-            color: #333;
             margin-bottom: 5px;
         }
 
-        .day.today {
-            background-color: #f1f3f9;
-            border-color: #4361ee;
+        .day-events {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
-        .day.other-month {
-            background-color: #f8f9fa;
-            color: #aaa;
+        .event-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
         }
 
-        .day.other-month .day-number {
-            color: #aaa;
+        .upcoming-events {
+            background: var(--bg-white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
         }
 
-        .event {
+        .upcoming-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .event-card {
+            padding: 15px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .event-card-title {
+            font-weight: 500;
             margin-bottom: 5px;
-            padding: 5px;
-            border-radius: 3px;
-            font-size: 0.8rem;
+            color: var(--text-color);
+        }
+
+        .event-card-time {
+            font-size: 0.85rem;
+            color: var(--light-text);
+        }
+
+        .add-event-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-color);
             color: white;
+            border: none;
             cursor: pointer;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
 
-        .event-more {
-            font-size: 0.8rem;
-            color: #666;
-            cursor: pointer;
-            text-align: center;
-            margin-top: 5px;
+        .add-event-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
         }
 
-        .event-more:hover {
-            text-decoration: underline;
-        }
-
-        .modal-overlay {
+        /* Modal styles */
+        .modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
             z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
         }
 
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
+        .modal.active {
+            display: flex;
         }
 
-        .modal {
-            background-color: white;
+        .modal-content {
+            background: var(--bg-white);
             border-radius: 10px;
-            width: 90%;
-            max-width: 600px;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
             max-height: 90vh;
             overflow-y: auto;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transform: translateY(-20px);
-            transition: all 0.3s ease;
-        }
-
-        .modal-overlay.active .modal {
-            transform: translateY(0);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .modal-header {
@@ -540,91 +544,129 @@ $eventTypes = getEventTypes();
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .modal-title {
             font-size: 1.2rem;
             font-weight: 600;
-            color: #333;
+            color: var(--primary-color);
         }
 
-        .modal-close {
+        .close-modal {
             background: none;
             border: none;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             cursor: pointer;
-            color: #888;
+            color: var(--light-text);
+            padding: 5px;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background: var(--bg-light);
+            color: var(--primary-color);
+        }
+
+        .event-info {
+            padding: 20px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .event-info h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .event-info p {
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+            transform: translateY(-1px);
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: 500;
-            color: #555;
-            font-size: 0.9rem;
+            color: var(--text-color);
         }
 
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .form-control {
             width: 100%;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
+            padding: 10px;
+            border: 1px solid var(--border-color);
             border-radius: 5px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.9rem;
+            font-family: inherit;
         }
 
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
+        .form-control:focus {
             outline: none;
-            border-color: #4361ee;
-            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.1);
-        }
-
-        .form-row {
-            display: flex;
-            gap: 15px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        .form-check {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .form-check input {
-            width: auto;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
+            border-color: var(--primary-color);
         }
 
         .color-picker {
             display: flex;
             gap: 10px;
-            flex-wrap: wrap;
             margin-top: 10px;
         }
 
@@ -637,205 +679,53 @@ $eventTypes = getEventTypes();
         }
 
         .color-option.selected {
-            border-color: #333;
+            border-color: var(--primary-color);
         }
 
-        .event-details {
-            margin-bottom: 20px;
-        }
-
-        .event-details-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .event-color {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-        }
-
-        .event-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .event-info {
-            margin-bottom: 10px;
-        }
-
-        .event-info-label {
-            font-weight: 500;
-            color: #555;
-            margin-right: 5px;
-        }
-
-        .event-description {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-        }
-
-        .event-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .day-events-modal .modal {
-            max-width: 500px;
-        }
-
-        .day-events-list {
-            margin-top: 15px;
-        }
-
-        .day-event-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .day-event-item:hover {
-            background-color: #f8f9fa;
-        }
-
-        .day-event-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .day-event-time {
-            font-size: 0.8rem;
-            color: #666;
-            width: 100px;
-        }
-
-        .day-event-title {
-            font-weight: 500;
-            color: #333;
-            flex: 1;
-        }
-
-        /* Responsive adjustments */
         @media (max-width: 768px) {
-            .calendar-actions {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 15px;
-            }
-            
-            .calendar-nav {
-                justify-content: space-between;
-            }
-            
-            .filter-container {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .weekdays, .days {
-                gap: 5px;
-            }
-            
-            .day {
-                min-height: 80px;
-                padding: 5px;
-            }
-            
-            .form-row {
-                flex-direction: column;
-                gap: 0;
+            .calendar-container {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
     <?php include 'sidebar.php'; ?>
     
-    <!-- Main Content -->
     <main class="main-content">
         <?php include 'header.php'; ?>
         
         <div class="calendar-container">
+            <div class="calendar-main">
             <div class="calendar-header">
-                <h1>Calendar</h1>
-                <p>View and manage events and activities</p>
-            </div>
-            
-            <?php if (!empty($successMessage)): ?>
-                <div class="alert alert-success">
-                    <?php echo $successMessage; ?>
-                </div>
-            <?php endif; ?>
-            
-            <?php if (!empty($errorMessage)): ?>
-                <div class="alert alert-danger">
-                    <?php echo $errorMessage; ?>
-                </div>
-            <?php endif; ?>
-            
-            <div class="calendar-actions">
+                    <h1 class="calendar-title"><?php echo $monthName . ' ' . $year; ?></h1>
                 <div class="calendar-nav">
-                    <div class="month-nav">
-                        <a href="?year=<?php echo $prevYear; ?>&month=<?php echo $prevMonth; ?>&event_type=<?php echo urlencode($eventType); ?>" class="nav-btn">
+                        <a href="?year=<?php echo $prevYear; ?>&month=<?php echo $prevMonth; ?>" class="nav-btn">
                             <i class="fas fa-chevron-left"></i>
                         </a>
-                        <div class="month-title"><?php echo $monthName . ' ' . $year; ?></div>
-                        <a href="?year=<?php echo $nextYear; ?>&month=<?php echo $nextMonth; ?>&event_type=<?php echo urlencode($eventType); ?>" class="nav-btn">
+                        <a href="?year=<?php echo date('Y'); ?>&month=<?php echo date('m'); ?>" class="nav-btn">
+                            <i class="fas fa-calendar-day"></i>
+                        </a>
+                        <a href="?year=<?php echo $nextYear; ?>&month=<?php echo $nextMonth; ?>" class="nav-btn">
                             <i class="fas fa-chevron-right"></i>
                         </a>
-                    </div>
-                    <a href="?year=<?php echo date('Y'); ?>&month=<?php echo date('m'); ?>&event_type=<?php echo urlencode($eventType); ?>" class="btn btn-outline">Today</a>
-                </div>
-                
-                <div class="filter-container">
-                    <form method="get" action="calendar.php" class="filter-form">
-                        <input type="hidden" name="year" value="<?php echo $year; ?>">
-                        <input type="hidden" name="month" value="<?php echo $month; ?>">
-                        <select name="event_type" class="filter-select" onchange="this.form.submit()">
-                            <option value="">All Event Types</option>
-                            <?php foreach ($eventTypes as $type): ?>
-                                <option value="<?php echo $type; ?>" <?php echo $eventType == $type ? 'selected' : ''; ?>><?php echo $type; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </form>
-                    
-                    <button id="addEventBtn" class="btn btn-primary btn-icon">
-                        <i class="fas fa-plus"></i> Add Event
-                    </button>
                 </div>
             </div>
             
             <div class="calendar-grid">
-                <div class="weekdays">
-                    <div class="weekday">Sunday</div>
-                    <div class="weekday">Monday</div>
-                    <div class="weekday">Tuesday</div>
-                    <div class="weekday">Wednesday</div>
-                    <div class="weekday">Thursday</div>
-                    <div class="weekday">Friday</div>
-                    <div class="weekday">Saturday</div>
-                </div>
-                
-                <div class="days">
+                    <div class="weekday">Sun</div>
+                    <div class="weekday">Mon</div>
+                    <div class="weekday">Tue</div>
+                    <div class="weekday">Wed</div>
+                    <div class="weekday">Thu</div>
+                    <div class="weekday">Fri</div>
+                    <div class="weekday">Sat</div>
+                    
                     <?php
                     // Previous month's days
                     $prevMonthDays = date('t', mktime(0, 0, 0, $month - 1, 1, $year));
                     for ($i = 0; $i < $dayOfWeek; $i++) {
                         $day = $prevMonthDays - $dayOfWeek + $i + 1;
-                        $date = sprintf("%04d-%02d-%02d", $prevYear, $prevMonth, $day);
                         echo '<div class="day other-month">';
                         echo '<div class="day-number">' . $day . '</div>';
                         echo '</div>';
@@ -855,32 +745,20 @@ $eventTypes = getEventTypes();
                         
                         // Get events for this day
                         $dateEvents = getDateEvents($date, $monthEvents);
-                        $eventCount = count($dateEvents);
-                        $maxDisplay = 3;
-                        
-                        // Display events (limited to 3)
-                        for ($j = 0; $j < min($eventCount, $maxDisplay); $j++) {
-                            $event = $dateEvents[$j];
-                            echo '<div class="event" style="background-color: ' . $event['Color'] . ';" data-event-id="' . $event['EventID'] . '">';
-                            if (!$event['IsAllDay']) {
-                                $startTime = date('g:i A', strtotime($event['StartDate']));
-                                echo $startTime . ' - ';
+                        if (!empty($dateEvents)) {
+                            echo '<div class="day-events">';
+                            foreach ($dateEvents as $event) {
+                                echo '<div class="event-dot" style="background-color: ' . $event['Color'] . '"></div>';
                             }
-                            echo htmlspecialchars($event['Title']) . '</div>';
-                        }
-                        
-                        // Show "more" indicator if there are more events
-                        if ($eventCount > $maxDisplay) {
-                            echo '<div class="event-more" data-date="' . $date . '">+' . ($eventCount - $maxDisplay) . ' more</div>';
+                            echo '</div>';
                         }
                         
                         echo '</div>';
                     }
                     
                     // Next month's days
-                    $daysAfter = 42 - ($dayOfWeek + $numberDays); // 42 = 6 rows of 7 days
+                    $daysAfter = 42 - ($dayOfWeek + $numberDays);
                     for ($i = 1; $i <= $daysAfter; $i++) {
-                        $date = sprintf("%04d-%02d-%02d", $nextYear, $nextMonth, $i);
                         echo '<div class="day other-month">';
                         echo '<div class="day-number">' . $i . '</div>';
                         echo '</div>';
@@ -888,56 +766,80 @@ $eventTypes = getEventTypes();
                     ?>
                 </div>
             </div>
+
+            <div class="upcoming-events">
+                <h2 class="upcoming-title">Upcoming Events</h2>
+                <?php foreach ($upcomingEvents as $event): ?>
+                    <div class="event-card" data-event-id="<?php echo $event['EventID']; ?>">
+                        <div class="event-dot" style="background-color: <?php echo $event['Color']; ?>"></div>
+                        <div class="event-card-title"><?php echo htmlspecialchars($event['Title']); ?></div>
+                        <div class="event-card-time">
+                            <?php
+                            $startDate = new DateTime($event['StartDate']);
+                            echo $event['IsAllDay'] ? 'All Day' : $startDate->format('g:i A');
+                            ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
         </div>
+
+        <button class="add-event-btn" id="addEventBtn">
+            <i class="fas fa-plus"></i>
+        </button>
         
         <!-- Add Event Modal -->
-        <div class="modal-overlay" id="addEventModal">
-            <div class="modal">
+        <div class="modal" id="addEventModal">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h2 class="modal-title">Add New Event</h2>
-                    <button class="modal-close" id="closeAddEventModal">&times;</button>
+                    <button class="close-modal">&times;</button>
                 </div>
-                <form id="addEventForm" method="post">
+                <form id="addEventForm" method="post" action="calendar.php">
                     <input type="hidden" name="add_event" value="1">
+                    <input type="hidden" name="year" value="<?php echo $year; ?>">
+                    <input type="hidden" name="month" value="<?php echo $month; ?>">
                     <div class="form-group">
-                        <label for="title">Event Title</label>
-                        <input type="text" id="title" name="title" required>
+                        <label for="title">Event Title *</label>
+                        <input type="text" id="title" name="title" class="form-control" required>
                     </div>
                     <div class="form-group">
                         <label for="description">Description</label>
-                        <textarea id="description" name="description"></textarea>
+                        <textarea id="description" name="description" class="form-control" rows="3"></textarea>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="start_date">Start Date</label>
-                            <input type="date" id="start_date" name="start_date" required>
+                            <label for="start_date">Start Date *</label>
+                            <input type="date" id="start_date" name="start_date" class="form-control" required>
                         </div>
                         <div class="form-group">
                             <label for="start_time">Start Time</label>
-                            <input type="time" id="start_time" name="start_time" required>
+                            <input type="time" id="start_time" name="start_time" class="form-control">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="end_date">End Date</label>
-                            <input type="date" id="end_date" name="end_date" required>
+                            <label for="end_date">End Date *</label>
+                            <input type="date" id="end_date" name="end_date" class="form-control" required>
                         </div>
                         <div class="form-group">
                             <label for="end_time">End Time</label>
-                            <input type="time" id="end_time" name="end_time" required>
+                            <input type="time" id="end_time" name="end_time" class="form-control">
                         </div>
                     </div>
-                    <div class="form-check">
-                        <input type="checkbox" id="is_all_day" name="is_all_day">
-                        <label for="is_all_day">All Day Event</label>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="is_all_day" id="is_all_day">
+                            All Day Event
+                        </label>
                     </div>
                     <div class="form-group">
                         <label for="location">Location</label>
-                        <input type="text" id="location" name="location">
+                        <input type="text" id="location" name="location" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="event_type">Event Type</label>
-                        <select id="event_type" name="event_type" required>
+                        <select id="event_type" name="event_type" class="form-control">
                             <option value="Meeting">Meeting</option>
                             <option value="Academic">Academic</option>
                             <option value="Event">Event</option>
@@ -950,149 +852,32 @@ $eventTypes = getEventTypes();
                         <label>Event Color</label>
                         <input type="hidden" id="color" name="color" value="#4361ee">
                         <div class="color-picker">
-                            <div class="color-option selected" style="background-color: #4361ee;" data-color="#4361ee"></div>
-                            <div class="color-option" style="background-color: #0d8a53;" data-color="#0d8a53"></div>
-                            <div class="color-option" style="background-color: #d63d62;" data-color="#d63d62"></div>
-                            <div class="color-option" style="background-color: #f9a826;" data-color="#f9a826"></div>
-                            <div class="color-option" style="background-color: #6c757d;" data-color="#6c757d"></div>
-                            <div class="color-option" style="background-color: #9c27b0;" data-color="#9c27b0"></div>
+                            <div class="color-option selected" style="background-color: #4361ee" data-color="#4361ee"></div>
+                            <div class="color-option" style="background-color: #2a9d8f" data-color="#2a9d8f"></div>
+                            <div class="color-option" style="background-color: #e63946" data-color="#e63946"></div>
+                            <div class="color-option" style="background-color: #f4a261" data-color="#f4a261"></div>
+                            <div class="color-option" style="background-color: #2a9d8f" data-color="#2a9d8f"></div>
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn btn-outline" id="cancelAddEventBtn">Cancel</button>
                         <button type="submit" class="btn btn-primary">Add Event</button>
+                        <button type="button" class="btn btn-secondary close-modal">Cancel</button>
                     </div>
                 </form>
             </div>
         </div>
         
-        <!-- Event Details Modal -->
-        <div class="modal-overlay" id="eventDetailsModal">
-            <div class="modal">
+        <!-- View/Edit Event Modal -->
+        <div class="modal" id="viewEventModal">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h2 class="modal-title">Event Details</h2>
-                    <button class="modal-close" id="closeEventDetailsModal">&times;</button>
+                    <button class="close-modal">&times;</button>
                 </div>
-                <div class="event-details">
-                    <div class="event-details-header">
-                        <div class="event-color" id="event-details-color"></div>
-                        <h3 class="event-title" id="event-details-title"></h3>
-                    </div>
-                    <div class="event-info">
-                        <span class="event-info-label">Date:</span>
-                        <span id="event-details-date"></span>
-                    </div>
-                    <div class="event-info">
-                        <span class="event-info-label">Time:</span>
-                        <span id="event-details-time"></span>
-                    </div>
-                    <div class="event-info">
-                        <span class="event-info-label">Location:</span>
-                        <span id="event-details-location"></span>
-                    </div>
-                    <div class="event-info">
-                        <span class="event-info-label">Event Type:</span>
-                        <span id="event-details-type"></span>
-                    </div>
-                    <div class="event-description" id="event-details-description"></div>
-                </div>
-                <div class="event-actions">
-                    <button type="button" class="btn btn-outline" id="editEventBtn">Edit</button>
+                <div id="eventDetails"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-primary" id="editEventBtn">Edit</button>
                     <button type="button" class="btn btn-danger" id="deleteEventBtn">Delete</button>
-                </div>
-                <form id="deleteEventForm" method="post" style="display: none;">
-                    <input type="hidden" name="delete_event" value="1">
-                    <input type="hidden" id="delete_event_id" name="event_id">
-                </form>
-            </div>
-        </div>
-        
-        <!-- Edit Event Modal -->
-        <div class="modal-overlay" id="editEventModal">
-            <div class="modal">
-                <div class="modal-header">
-                    <h2 class="modal-title">Edit Event</h2>
-                    <button class="modal-close" id="closeEditEventModal">&times;</button>
-                </div>
-                <form id="editEventForm" method="post">
-                    <input type="hidden" name="edit_event" value="1">
-                    <input type="hidden" id="edit_event_id" name="event_id">
-                    <div class="form-group">
-                        <label for="edit_title">Event Title</label>
-                        <input type="text" id="edit_title" name="title" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_description">Description</label>
-                        <textarea id="edit_description" name="description"></textarea>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="edit_start_date">Start Date</label>
-                            <input type="date" id="edit_start_date" name="start_date" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="edit_start_time">Start Time</label>
-                            <input type="time" id="edit_start_time" name="start_time" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="edit_end_date">End Date</label>
-                            <input type="date" id="edit_end_date" name="end_date" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="edit_end_time">End Time</label>
-                            <input type="time" id="edit_end_time" name="end_time" required>
-                        </div>
-                    </div>
-                    <div class="form-check">
-                        <input type="checkbox" id="edit_is_all_day" name="is_all_day">
-                        <label for="edit_is_all_day">All Day Event</label>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_location">Location</label>
-                        <input type="text" id="edit_location" name="location">
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_event_type">Event Type</label>
-                        <select id="edit_event_type" name="event_type" required>
-                            <option value="Meeting">Meeting</option>
-                            <option value="Academic">Academic</option>
-                            <option value="Event">Event</option>
-                            <option value="Training">Training</option>
-                            <option value="Holiday">Holiday</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Event Color</label>
-                        <input type="hidden" id="edit_color" name="color" value="#4361ee">
-                        <div class="color-picker" id="edit_color_picker">
-                            <div class="color-option" style="background-color: #4361ee;" data-color="#4361ee"></div>
-                            <div class="color-option" style="background-color: #0d8a53;" data-color="#0d8a53"></div>
-                            <div class="color-option" style="background-color: #d63d62;" data-color="#d63d62"></div>
-                            <div class="color-option" style="background-color: #f9a826;" data-color="#f9a826"></div>
-                            <div class="color-option" style="background-color: #6c757d;" data-color="#6c757d"></div>
-                            <div class="color-option" style="background-color: #9c27b0;" data-color="#9c27b0"></div>
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-outline" id="cancelEditEventBtn">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Update Event</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Day Events Modal -->
-        <div class="modal-overlay" id="dayEventsModal">
-            <div class="modal">
-                <div class="modal-header">
-                    <h2 class="modal-title">Events for <span id="day-events-date"></span></h2>
-                    <button class="modal-close" id="closeDayEventsModal">&times;</button>
-                </div>
-                <div class="day-events-list" id="day-events-list">
-                    <!-- Events will be populated here -->
                 </div>
             </div>
         </div>
@@ -1100,624 +885,90 @@ $eventTypes = getEventTypes();
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Add Event Modal
-            const addEventBtn = document.getElementById('addEventBtn');
+            // Modal handling
             const addEventModal = document.getElementById('addEventModal');
-            const closeAddEventModal = document.getElementById('closeAddEventModal');
-            const cancelAddEventBtn = document.getElementById('cancelAddEventBtn');
-            const isAllDayCheckbox = document.getElementById('is_all_day');
-            const startTimeInput = document.getElementById('start_time');
-            const endTimeInput = document.getElementById('end_time');
+            const closeButtons = document.querySelectorAll('.close-modal');
             
-            // Set default dates
-            const today = new Date();
-            const todayFormatted = today.toISOString().split('T')[0];
-            document.getElementById('start_date').value = todayFormatted;
-            document.getElementById('end_date').value = todayFormatted;
+            function openModal(modal) {
+                modal.classList.add('active');
+            }
             
-            // Set default times
-            const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const currentTime = `${hours}:${minutes}`;
-            startTimeInput.value = currentTime;
+            function closeModal(modal) {
+                modal.classList.remove('active');
+            }
             
-            // Set end time to 1 hour later
-            const endDate = new Date(now);
-            endDate.setHours(now.getHours() + 1);
-            const endHours = endDate.getHours().toString().padStart(2, '0');
-            const endMinutes = endDate.getMinutes().toString().padStart(2, '0');
-            const endTime = `${endHours}:${endMinutes}`;
-            endTimeInput.value = endTime;
-            
-            addEventBtn.addEventListener('click', function() {
-                addEventModal.classList.add('active');
+            // Calendar Day Click
+            const calendarDays = document.querySelectorAll('.day:not(.other-month)');
+            calendarDays.forEach(day => {
+                day.addEventListener('click', function() {
+                    const date = this.dataset.date;
+                    document.getElementById('start_date').value = date;
+                    document.getElementById('end_date').value = date;
+                    openModal(addEventModal);
+                });
             });
             
-            closeAddEventModal.addEventListener('click', function() {
-                addEventModal.classList.remove('active');
+            // Close modal buttons
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    closeModal(this.closest('.modal'));
+                });
             });
             
-            cancelAddEventBtn.addEventListener('click', function() {
-                addEventModal.classList.remove('active');
-            });
-            
-            // All Day Event Checkbox
-            isAllDayCheckbox.addEventListener('change', function() {
-                if (this.checked) {
-                    startTimeInput.disabled = true;
-                    endTimeInput.disabled = true;
-                } else {
-                    startTimeInput.disabled = false;
-                    endTimeInput.disabled = false;
+            // Close modal when clicking outside
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal')) {
+                    closeModal(e.target);
                 }
             });
             
+            // All Day Event Toggle
+            const isAllDayCheckbox = document.getElementById('is_all_day');
+            const timeInputs = document.querySelectorAll('input[type="time"]');
+            
+            isAllDayCheckbox.addEventListener('change', function() {
+                timeInputs.forEach(input => {
+                    input.disabled = this.checked;
+                if (this.checked) {
+                        input.value = '';
+                    }
+                });
+            });
+            
             // Color Picker
-            const colorOptions = document.querySelectorAll('.color-picker .color-option');
+            const colorOptions = document.querySelectorAll('.color-option');
             const colorInput = document.getElementById('color');
             
             colorOptions.forEach(option => {
                 option.addEventListener('click', function() {
-                    const color = this.getAttribute('data-color');
-                    colorInput.value = color;
-                    
-                    // Remove selected class from all options
                     colorOptions.forEach(opt => opt.classList.remove('selected'));
-                    
-                    // Add selected class to clicked option
                     this.classList.add('selected');
+                    colorInput.value = this.dataset.color;
                 });
             });
             
-            // Event Details Modal
-            const eventDetailsModal = document.getElementById('eventDetailsModal');
-            const closeEventDetailsModal = document.getElementById('closeEventDetailsModal');
-            const events = document.querySelectorAll('.event');
-            const editEventBtn = document.getElementById('editEventBtn');
-            const deleteEventBtn = document.getElementById('deleteEventBtn');
-            const deleteEventForm = document.getElementById('deleteEventForm');
-            const deleteEventId = document.getElementById('delete_event_id');
-            
-            events.forEach(event => {
-                event.addEventListener('click', function() {
-                    const eventId = this.getAttribute('data-event-id');
-                    
-                    // Fetch event details via AJAX
-                    fetch(`get_event.php?id=${eventId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            // For demonstration, we'll use hardcoded data
-                            // In a real application, you would use the data from the AJAX response
-                            const eventData = {
-                                id: eventId,
-                                title: this.textContent.includes('-') ? this.textContent.split('-')[1].trim() : this.textContent,
-                                description: 'This is a sample event description. In a real application, this would be fetched from the database.',
-                                startDate: '2025-04-20',
-                                startTime: '09:00',
-                                endDate: '2025-04-20',
-                                endTime: '11:00',
-                                isAllDay: false,
-                                location: 'Conference Room A',
-                                type: 'Meeting',
-                                color: this.style.backgroundColor
-                            };
-                            
-                            // Populate event details
-                            document.getElementById('event-details-color').style.backgroundColor = eventData.color;
-                            document.getElementById('event-details-title').textContent = eventData.title;
-                            document.getElementById('event-details-date').textContent = formatDate(eventData.startDate, eventData.endDate);
-                            document.getElementById('event-details-time').textContent = eventData.isAllDay ? 'All Day' : `${formatTime(eventData.startTime)} - ${formatTime(eventData.endTime)}`;
-                            document.getElementById('event-details-location').textContent = eventData.location || 'Not specified';
-                            document.getElementById('event-details-type').textContent = eventData.type;
-                            document.getElementById('event-details-description').textContent = eventData.description || 'No description provided.';
-                            
-                            // Set event ID for edit and delete
-                            deleteEventId.value = eventData.id;
-                            
-                            // Show modal
-                            eventDetailsModal.classList.add('active');
-                        })
-                        .catch(error => {
-                            console.error('Error fetching event details:', error);
-                            
-                            // For demonstration, we'll use hardcoded data
-                            const eventData = {
-                                id: eventId,
-                                title: this.textContent.includes('-') ? this.textContent.split('-')[1].trim() : this.textContent,
-                                description: 'This is a sample event description. In a real application, this would be fetched from the database.',
-                                startDate: '2025-04-20',
-                                startTime: '09:00',
-                                endDate: '2025-04-20',
-                                endTime: '11:00',
-                                isAllDay: false,
-                                location: 'Conference Room A',
-                                type: 'Meeting',
-                                color: this.style.backgroundColor
-                            };
-                            
-                            // Populate event details
-                            document.getElementById('event-details-color').style.backgroundColor = eventData.color;
-                            document.getElementById('event-details-title').textContent = eventData.title;
-                            document.getElementById('event-details-date').textContent = formatDate(eventData.startDate, eventData.endDate);
-                            document.getElementById('event-details-time').textContent = eventData.isAllDay ? 'All Day' : `${formatTime(eventData.startTime)} - ${formatTime(eventData.endTime)}`;
-                            document.getElementById('event-details-location').textContent = eventData.location || 'Not specified';
-                            document.getElementById('event-details-type').textContent = eventData.type;
-                            document.getElementById('event-details-description').textContent = eventData.description || 'No description provided.';
-                            
-                            // Set event ID for edit and delete
-                            deleteEventId.value = eventData.id;
-                            
-                            // Show modal
-                            eventDetailsModal.classList.add('active');
-                        });
-                });
-            });
-            
-            closeEventDetailsModal.addEventListener('click', function() {
-                eventDetailsModal.classList.remove('active');
-            });
-            
-            // Edit Event
-            const editEventModal = document.getElementById('editEventModal');
-            const closeEditEventModal = document.getElementById('closeEditEventModal');
-            const cancelEditEventBtn = document.getElementById('cancelEditEventBtn');
-            const editEventId = document.getElementById('edit_event_id');
-            const editTitle = document.getElementById('edit_title');
-            const editDescription = document.getElementById('edit_description');
-            const editStartDate = document.getElementById('edit_start_date');
-            const editStartTime = document.getElementById('edit_start_time');
-            const editEndDate = document.getElementById('edit_end_date');
-            const editEndTime = document.getElementById('edit_end_time');
-            const editIsAllDay = document.getElementById('edit_is_all_day');
-            const editLocation = document.getElementById('edit_location');
-            const editEventType = document.getElementById('edit_event_type');
-            const editColor = document.getElementById('edit_color');
-            const editColorOptions = document.querySelectorAll('#edit_color_picker .color-option');
-            
-            editEventBtn.addEventListener('click', function() {
-                const eventId = deleteEventId.value;
+            // Form Submission
+            const addEventForm = document.getElementById('addEventForm');
+            addEventForm.addEventListener('submit', function(e) {
+                // Basic validation
+                const title = document.getElementById('title').value;
+                const startDate = document.getElementById('start_date').value;
+                const endDate = document.getElementById('end_date').value;
                 
-                // Fetch event details via AJAX
-                fetch(`get_event.php?id=${eventId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        // For demonstration, we'll use hardcoded data
-                        // In a real application, you would use the data from the AJAX response
-                        const eventData = {
-                            id: eventId,
-                            title: document.getElementById('event-details-title').textContent,
-                            description: document.getElementById('event-details-description').textContent,
-                            startDate: '2025-04-20',
-                            startTime: '09:00',
-                            endDate: '2025-04-20',
-                            endTime: '11:00',
-                            isAllDay: false,
-                            location: document.getElementById('event-details-location').textContent,
-                            type: document.getElementById('event-details-type').textContent,
-                            color: document.getElementById('event-details-color').style.backgroundColor
-                        };
-                        
-                        // Populate edit form
-                        editEventId.value = eventData.id;
-                        editTitle.value = eventData.title;
-                        editDescription.value = eventData.description === 'No description provided.' ? '' : eventData.description;
-                        editStartDate.value = eventData.startDate;
-                        editStartTime.value = eventData.startTime;
-                        editEndDate.value = eventData.endDate;
-                        editEndTime.value = eventData.endTime;
-                        editIsAllDay.checked = eventData.isAllDay;
-                        editLocation.value = eventData.location === 'Not specified' ? '' : eventData.location;
-                        editEventType.value = eventData.type;
-                        
-                        // Set color
-                        const colorHex = rgbToHex(eventData.color);
-                        editColor.value = colorHex;
-                        
-                        // Update color picker
-                        editColorOptions.forEach(option => {
-                            option.classList.remove('selected');
-                            if (option.getAttribute('data-color') === colorHex) {
-                                option.classList.add('selected');
-                            }
-                        });
-                        
-                        // Handle all day event
-                        if (eventData.isAllDay) {
-                            editStartTime.disabled = true;
-                            editEndTime.disabled = true;
-                        } else {
-                            editStartTime.disabled = false;
-                            editEndTime.disabled = false;
-                        }
-                        
-                        // Hide event details modal and show edit modal
-                        eventDetailsModal.classList.remove('active');
-                        editEventModal.classList.add('active');
-                    })
-                    .catch(error => {
-                        console.error('Error fetching event details for edit:', error);
-                        
-                        // For demonstration, we'll use hardcoded data
-                        const eventData = {
-                            id: eventId,
-                            title: document.getElementById('event-details-title').textContent,
-                            description: document.getElementById('event-details-description').textContent,
-                            startDate: '2025-04-20',
-                            startTime: '09:00',
-                            endDate: '2025-04-20',
-                            endTime: '11:00',
-                            isAllDay: false,
-                            location: document.getElementById('event-details-location').textContent,
-                            type: document.getElementById('event-details-type').textContent,
-                            color: document.getElementById('event-details-color').style.backgroundColor
-                        };
-                        
-                        // Populate edit form
-                        editEventId.value = eventData.id;
-                        editTitle.value = eventData.title;
-                        editDescription.value = eventData.description === 'No description provided.' ? '' : eventData.description;
-                        editStartDate.value = eventData.startDate;
-                        editStartTime.value = eventData.startTime;
-                        editEndDate.value = eventData.endDate;
-                        editEndTime.value = eventData.endTime;
-                        editIsAllDay.checked = eventData.isAllDay;
-                        editLocation.value = eventData.location === 'Not specified' ? '' : eventData.location;
-                        editEventType.value = eventData.type;
-                        
-                        // Set color
-                        const colorHex = rgbToHex(eventData.color);
-                        editColor.value = colorHex;
-                        
-                        // Update color picker
-                        editColorOptions.forEach(option => {
-                            option.classList.remove('selected');
-                            if (option.getAttribute('data-color') === colorHex) {
-                                option.classList.add('selected');
-                            }
-                        });
-                        
-                        // Handle all day event
-                        if (eventData.isAllDay) {
-                            editStartTime.disabled = true;
-                            editEndTime.disabled = true;
-                        } else {
-                            editStartTime.disabled = false;
-                            editEndTime.disabled = false;
-                        }
-                        
-                        // Hide event details modal and show edit modal
-                        eventDetailsModal.classList.remove('active');
-                        editEventModal.classList.add('active');
-                    });
-            });
-            
-            closeEditEventModal.addEventListener('click', function() {
-                editEventModal.classList.remove('active');
-            });
-            
-            cancelEditEventBtn.addEventListener('click', function() {
-                editEventModal.classList.remove('active');
-            });
-            
-            // Edit All Day Event Checkbox
-            editIsAllDay.addEventListener('change', function() {
-                if (this.checked) {
-                    editStartTime.disabled = true;
-                    editEndTime.disabled = true;
-                } else {
-                    editStartTime.disabled = false;
-                    editEndTime.disabled = false;
-                }
-            });
-            
-            // Edit Color Picker
-            editColorOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    const color = this.getAttribute('data-color');
-                    editColor.value = color;
-                    
-                    // Remove selected class from all options
-                    editColorOptions.forEach(opt => opt.classList.remove('selected'));
-                    
-                    // Add selected class to clicked option
-                    this.classList.add('selected');
-                });
-            });
-            
-            // Delete Event
-            deleteEventBtn.addEventListener('click', function() {
-                if (confirm('Are you sure you want to delete this event?')) {
-                    deleteEventForm.submit();
-                }
-            });
-            
-            // Day Events Modal
-            const dayEventsModal = document.getElementById('dayEventsModal');
-            const closeDayEventsModal = document.getElementById('closeDayEventsModal');
-            const dayEventsList = document.getElementById('day-events-list');
-            const dayEventsDate = document.getElementById('day-events-date');
-            const eventMoreLinks = document.querySelectorAll('.event-more');
-            
-            eventMoreLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    const date = this.getAttribute('data-date');
-                    const formattedDate = new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                    dayEventsDate.textContent = formattedDate;
-                    
-                    // Clear previous events
-                    dayEventsList.innerHTML = '';
-                    
-                    // Fetch events for this date via AJAX
-                    fetch(`get_day_events.php?date=${date}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            // For demonstration, we'll use hardcoded data
-                            // In a real application, you would use the data from the AJAX response
-                            const events = [
-                                {
-                                    id: 1,
-                                    title: 'Faculty Meeting',
-                                    startTime: '09:00',
-                                    endTime: '11:00',
-                                    isAllDay: false,
-                                    color: '#4361ee'
-                                },
-                                {
-                                    id: 2,
-                                    title: 'Department Meeting',
-                                    startTime: '13:00',
-                                    endTime: '14:30',
-                                    isAllDay: false,
-                                    color: '#4361ee'
-                                },
-                                {
-                                    id: 3,
-                                    title: 'Student Council Meeting',
-                                    startTime: '15:00',
-                                    endTime: '16:30',
-                                    isAllDay: false,
-                                    color: '#f9a826'
-                                },
-                                {
-                                    id: 4,
-                                    title: 'Enrollment Deadline',
-                                    isAllDay: true,
-                                    color: '#d63d62'
-                                }
-                            ];
-                            
-                            // Populate events list
-                            events.forEach(event => {
-                                const eventItem = document.createElement('div');
-                                eventItem.className = 'day-event-item';
-                                eventItem.setAttribute('data-event-id', event.id);
-                                
-                                const eventColor = document.createElement('div');
-                                eventColor.className = 'day-event-color';
-                                eventColor.style.backgroundColor = event.color;
-                                
-                                const eventTime = document.createElement('div');
-                                eventTime.className = 'day-event-time';
-                                eventTime.textContent = event.isAllDay ? 'All Day' : `${formatTime(event.startTime)} - ${formatTime(event.endTime)}`;
-                                
-                                const eventTitle = document.createElement('div');
-                                eventTitle.className = 'day-event-title';
-                                eventTitle.textContent = event.title;
-                                
-                                eventItem.appendChild(eventColor);
-                                eventItem.appendChild(eventTime);
-                                eventItem.appendChild(eventTitle);
-                                
-                                dayEventsList.appendChild(eventItem);
-                                
-                                // Add click event to show event details
-                                eventItem.addEventListener('click', function() {
-                                    const eventId = this.getAttribute('data-event-id');
-                                    
-                                    // Hide day events modal
-                                    dayEventsModal.classList.remove('active');
-                                    
-                                    // Simulate click on event to show details
-                                    const eventElement = document.querySelector(`.event[data-event-id="${eventId}"]`);
-                                    if (eventElement) {
-                                        eventElement.click();
-                                    } else {
-                                        // Fetch event details via AJAX and show details modal
-                                        // For demonstration, we'll use the event data we already have
-                                        const eventData = events.find(e => e.id == eventId);
-                                        
-                                        // Populate event details
-                                        document.getElementById('event-details-color').style.backgroundColor = eventData.color;
-                                        document.getElementById('event-details-title').textContent = eventData.title;
-                                        document.getElementById('event-details-date').textContent = formattedDate;
-                                        document.getElementById('event-details-time').textContent = eventData.isAllDay ? 'All Day' : `${formatTime(eventData.startTime)} - ${formatTime(eventData.endTime)}`;
-                                        document.getElementById('event-details-location').textContent = 'Not specified';
-                                        document.getElementById('event-details-type').textContent = 'Meeting';
-                                        document.getElementById('event-details-description').textContent = 'No description provided.';
-                                        
-                                        // Set event ID for edit and delete
-                                        deleteEventId.value = eventData.id;
-                                        
-                                        // Show modal
-                                        eventDetailsModal.classList.add('active');
-                                    }
-                                });
-                            });
-                        })
-                        .catch(error => {
-                            console.error('Error fetching day events:', error);
-                            
-                            // For demonstration, we'll use hardcoded data
-                            const events = [
-                                {
-                                    id: 1,
-                                    title: 'Faculty Meeting',
-                                    startTime: '09:00',
-                                    endTime: '11:00',
-                                    isAllDay: false,
-                                    color: '#4361ee'
-                                },
-                                {
-                                    id: 2,
-                                    title: 'Department Meeting',
-                                    startTime: '13:00',
-                                    endTime: '14:30',
-                                    isAllDay: false,
-                                    color: '#4361ee'
-                                },
-                                {
-                                    id: 3,
-                                    title: 'Student Council Meeting',
-                                    startTime: '15:00',
-                                    endTime: '16:30',
-                                    isAllDay: false,
-                                    color: '#f9a826'
-                                },
-                                {
-                                    id: 4,
-                                    title: 'Enrollment Deadline',
-                                    isAllDay: true,
-                                    color: '#d63d62'
-                                }
-                            ];
-                            
-                            // Populate events list
-                            events.forEach(event => {
-                                const eventItem = document.createElement('div');
-                                eventItem.className = 'day-event-item';
-                                eventItem.setAttribute('data-event-id', event.id);
-                                
-                                const eventColor = document.createElement('div');
-                                eventColor.className = 'day-event-color';
-                                eventColor.style.backgroundColor = event.color;
-                                
-                                const eventTime = document.createElement('div');
-                                eventTime.className = 'day-event-time';
-                                eventTime.textContent = event.isAllDay ? 'All Day' : `${formatTime(event.startTime)} - ${formatTime(event.endTime)}`;
-                                
-                                const eventTitle = document.createElement('div');
-                                eventTitle.className = 'day-event-title';
-                                eventTitle.textContent = event.title;
-                                
-                                eventItem.appendChild(eventColor);
-                                eventItem.appendChild(eventTime);
-                                eventItem.appendChild(eventTitle);
-                                
-                                dayEventsList.appendChild(eventItem);
-                                
-                                // Add click event to show event details
-                                eventItem.addEventListener('click', function() {
-                                    const eventId = this.getAttribute('data-event-id');
-                                    
-                                    // Hide day events modal
-                                    dayEventsModal.classList.remove('active');
-                                    
-                                    // Simulate click on event to show details
-                                    const eventElement = document.querySelector(`.event[data-event-id="${eventId}"]`);
-                                    if (eventElement) {
-                                        eventElement.click();
-                                    } else {
-                                        // Fetch event details via AJAX and show details modal
-                                        // For demonstration, we'll use the event data we already have
-                                        const eventData = events.find(e => e.id == eventId);
-                                        
-                                        // Populate event details
-                                        document.getElementById('event-details-color').style.backgroundColor = eventData.color;
-                                        document.getElementById('event-details-title').textContent = eventData.title;
-                                        document.getElementById('event-details-date').textContent = formattedDate;
-                                        document.getElementById('event-details-time').textContent = eventData.isAllDay ? 'All Day' : `${formatTime(eventData.startTime)} - ${formatTime(eventData.endTime)}`;
-                                        document.getElementById('event-details-location').textContent = 'Not specified';
-                                        document.getElementById('event-details-type').textContent = 'Meeting';
-                                        document.getElementById('event-details-description').textContent = 'No description provided.';
-                                        
-                                        // Set event ID for edit and delete
-                                        deleteEventId.value = eventData.id;
-                                        
-                                        // Show modal
-                                        eventDetailsModal.classList.add('active');
-                                    }
-                                });
-                            });
-                        });
-                    
-                    // Show modal
-                    dayEventsModal.classList.add('active');
-                });
-            });
-            
-            closeDayEventsModal.addEventListener('click', function() {
-                dayEventsModal.classList.remove('active');
-            });
-            
-            // Day click event to add event on that day
-            const days = document.querySelectorAll('.day:not(.other-month)');
-            
-            days.forEach(day => {
-                day.addEventListener('dblclick', function() {
-                    const date = this.getAttribute('data-date');
-                    
-                    // Set date in add event form
-                    document.getElementById('start_date').value = date;
-                    document.getElementById('end_date').value = date;
-                    
-                    // Show add event modal
-                    addEventModal.classList.add('active');
-                });
-            });
-            
-            // Helper functions
-            function formatDate(startDate, endDate) {
-                const start = new Date(startDate);
-                const end = new Date(endDate);
-                
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                
-                if (startDate === endDate) {
-                    return start.toLocaleDateString('en-US', options);
-                } else {
-                    return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}`;
-                }
-            }
-            
-            function formatTime(time) {
-                const [hours, minutes] = time.split(':');
-                const hour = parseInt(hours);
-                const ampm = hour >= 12 ? 'PM' : 'AM';
-                const formattedHour = hour % 12 || 12;
-                
-                return `${formattedHour}:${minutes} ${ampm}`;
-            }
-            
-            function rgbToHex(rgb) {
-                // Check if already in hex format
-                if (rgb.startsWith('#')) {
-                    return rgb;
+                if (!title || !startDate || !endDate) {
+                    alert('Please fill in all required fields');
+                    e.preventDefault();
+                    return;
                 }
                 
-                // Extract RGB values
-                const rgbValues = rgb.match(/\d+/g);
-                if (!rgbValues || rgbValues.length !== 3) {
-                    return '#4361ee'; // Default color
+                // If all day event is checked, clear time values
+                if (document.getElementById('is_all_day').checked) {
+                    document.getElementById('start_time').value = '';
+                    document.getElementById('end_time').value = '';
                 }
                 
-                // Convert to hex
-                const r = parseInt(rgbValues[0]);
-                const g = parseInt(rgbValues[1]);
-                const b = parseInt(rgbValues[2]);
-                
-                return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
-            }
-            
-            // Auto-hide alerts after 5 seconds
-            const alerts = document.querySelectorAll('.alert');
-            if (alerts.length > 0) {
-                setTimeout(function() {
-                    alerts.forEach(function(alert) {
-                        alert.style.display = 'none';
-                    });
-                }, 5000);
-            }
+                // Let the form submit normally
+            });
         });
     </script>
 </body>
